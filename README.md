@@ -24,6 +24,7 @@ Some definitions listed below:
 
 - (5,4): wrappers to indicate the start/end of a function/the entire program
 - (8): end of statement
+- (3): comment wrappers
 - 
 
 
