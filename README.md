@@ -14,55 +14,60 @@ It will be a minimal stack based language (similar to Forth and uiua)
 
 Here are some core operations the language will support. Note: binary operations pop two items off the stack and push one item back on the stack. Unary operations pop one item off the stack and push one item back on the stack. We also only support integer operations. Execution will be done in order from left to right, top to bottom, line by line.
 
-Arithmetic operations (binary):
+**Arithmetic operations (binary)**:
 - `+`: pops two items off the stack and pushes the sum back on the stack
 - `-`: pops two items off the stack and pushes the difference back on the stack
 - `*`: pops two items off the stack and pushes the product back on the stack
 - `/`: pops two items off the stack and pushes the quotient back on the stack
 - `%`: pops two items off the stack and pushes the remainder back on the stack
 
-Logical operations (binary):
+**Logical operations (binary)**:
 - `=`: pops two items off the stack and pushes 1 if they are equal, 0 otherwise
 - `<`: pops two items off the stack and pushes 1 if the first is less than the second, 0 otherwise
 - `>`: pops two items off the stack and pushes 1 if the first is greater than the second, 0 otherwise
-- `<=`: pops two items off the stack and pushes 1 if the first is less than or equal to the second, 0 otherwise
-- `>=`: pops two items off the stack and pushes 1 if the first is greater than or equal to the second, 0 otherwise
-- `!=`: pops two items off the stack and pushes 1 if the first is not equal to the second, 0 otherwise
+- ~~`<=`: pops two items off the stack and pushes 1 if the first is less than or equal to the second, 0 otherwise~~
+- ~~`>=`: pops two items off the stack and pushes 1 if the first is greater than or equal to the second, 0 otherwise~~
+- ~~`!=`: pops two items off the stack and pushes 1 if the first is not equal to the second, 0 otherwise~~
 
-Logical operations (unary):
-- `&`: pops two items off the stack and pushes result after bitwise and
-- `|`: pops two items off the stack and pushes result after bitwise or
-- `~`: pops one item off the stack and pushes result after bitwise not
+There are no boolean operations. Instead, we will use the following convention: 0 is false, 1 is true. Note that truthy and falsy values will not work since we only have bitwise logic operations.
 
-Stack manipulation:
+**Logical operations**:
+- `&`: pops *two* items off the stack and pushes result after bitwise and
+- `|`: pops *two* items off the stack and pushes result after bitwise or
+- `~`: pops *one* item off the stack and pushes result after bitwise not
+
+**Stack manipulation**:
 - `pop`: pops the top of the stack
-- `dup` (.): duplicates the top of the stack
-- `dup.` (,): duplicates the second item on the stack
+- `dup`: duplicates the top of the stack
+- `dup.`: duplicates the second item on the stack
 - `swap`: swaps the top two items on the stack
 - `clear`: clears the stack
 
-I/O operations:
+a standalone literal will be pushed onto the stack by default
+
+**I/O operations**:
 - `input`: reads a value from the console and pushes it onto the stack
 - `print`: pops and prints the top of the stack to the console
 - `print.`: prints the entire stack to the console
-- `show`: prints the entire stack as string to the console
+- `print-`: prints the entire stack as string to the console
 
-Definitions (basic functions, similar to Forth):
+**Definitions** (basic functions, similar to Forth):
 - `def <name> <...> end`
 
-Conditionals and branching (must be inside a definition, provides "scoping"):
-- `if <...> else <...> end`: pops the top of the stack, if it is not 0, executes the first block, otherwise executes the second block
-- `do <i keyword> end`: first and second items on the stack are the start and end of the loop. Pops both items and executes the block between the `do` and `loop` commands
-- `while <...> end`: pops the top of the stack is not 0, if it is, exits the loop. Otherwise, executes the block between the `while` and `loop` commands
+No explicit return or parameter passing. Instead, the stack is used to pass parameters and return values.
 
-while/do commands might be redundant, so we can consider removing the do command
+**Conditionals and branching** (must be inside a definition, provides "scoping"):
+- `if <...> else <...> end`: pops the top of the stack, if it is 0, executes the second block, otherwise executes the first block
+- `while <...> end`: pops the top of the stack, if it is 0, exit the loop. Otherwise, executes the block between the `while` and `loop` commands
+- ~~`do <i keyword> end`: first and second items on the stack are the start and end of the loop. Pops both items and executes the block between the `do` and `loop` commands~~
 
-Variables (stolen from Forth):
-- `variable <name>`: creates an address in memory for a variable
+**Variables** (stolen from Forth):
+- `var <name>`: creates an address in memory for a variable
 - `!`: top of the stack is the value, second item is the address. Stores the value at the address
 - `@`: gets the value at the address on the top of the stack and pushes it onto the the stack
+- `^`: frees the memory at the address on the top of the stack
 
-Misc:
+**Misc**:
 - `#`: anything after a `#` is a comment and is ignored
 
 
