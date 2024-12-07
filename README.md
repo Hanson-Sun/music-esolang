@@ -47,9 +47,6 @@ I/O operations:
 - `print`: pops and prints the top of the stack to the console
 - `print.`: prints the entire stack to the console
 - `show`: prints the entire stack as string to the console
-- `play`: pops and plays the top of the stack as a note
-- `play.`: plays the entire stack as a chord
-- `play..`: plays the entire stack as a chord with a duration specified by the top of the stack
 
 Definitions (basic functions, similar to Forth):
 - `def <name> <...> end`
