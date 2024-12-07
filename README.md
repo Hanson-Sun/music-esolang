@@ -62,13 +62,14 @@ a standalone literal will be pushed onto the stack by default
 - `input`: reads a value from the console and pushes it onto the stack
 - `print`: pops and prints the top of the stack to the console
 - `print-`: pops and prints the top of the stack as a character to the console
+- `debug`: prints the entire stack to the console
 
 **Definitions** (basic functions, similar to Forth):
 - `def <name> <...> end`
 
 No explicit return or parameter passing. Instead, the stack is used to pass parameters and return values.
 
-**Conditionals and Branching** (must be inside a definition, provides "scoping"):
+**Conditionals and Branching**:
 - `if <...> else <...> end`: pops the top of the stack, if it is 0, executes the second block, otherwise executes the first block
 - `while <...> end`: pops the top of the stack, if it is 0, exit the loop. Otherwise, executes the block between the `while` and `end` commands
 
@@ -108,7 +109,7 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
 
 <stack-op>       ::= "pop" | "dup" | "dup." | "swap" | "size"
 
-<io-op>          ::= "input" | "print" | "print-"
+<io-op>          ::= "input" | "print" | "print-" | "debug"
 
 <control-flow>   ::= <if-else> | <while>
 <if-else>        ::= "if" <block> [ "else" <block> ] "end"
@@ -182,9 +183,9 @@ while
     else
         counter @  # Get counter value again #
         1 -        # Subtract 1 from counter #
-        !           # Store the updated value of counter #
+        !          # Store the updated value of counter #
         counter @  # Push counter value to stack #
-        print       # Print counter value #
+        print      # Print counter value #
     end
 end
 
