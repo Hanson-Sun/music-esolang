@@ -153,11 +153,7 @@ def D4
 end
 
 # Main program flow #
-( C )          # Push pitch C (representing number 1 in this case) onto the stack #
-( E G )        # Push pitches E and G (representing a number literal) #
-+              # Add them together (E + G) #
-( F )          # Push F (representing another number literal) onto the stack #
-*              # Multiply the result by F #
+1 2 + 3 *      # Push 1, 2, add them, push 3, multiply the result #         
 
 # Call the function C4 to add 3 to the result and print #
 C4             # Function C4 gets called, prints input + 3 #
