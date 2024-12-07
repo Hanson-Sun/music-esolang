@@ -35,7 +35,6 @@ Logical operations (unary):
 - `~`: pops one item off the stack and pushes result after bitwise not
 
 Stack manipulation:
-- `push` (maybe this should be built in to not require an explicit operation):
 - `pop`: pops the top of the stack
 - `dup` (.): duplicates the top of the stack
 - `dup.` (,): duplicates the second item on the stack
