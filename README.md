@@ -18,16 +18,21 @@ In general, there are certain chords reserved as keywords. For our purposes, a c
 
 Speaking of literals, Polyphony operates on a base 12 number system. Each semitone represents a digit, with C being 0 and B being 11. By the way, the octave doesn't matter so both C#4 and C#5 represent 1. 
 
-As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes. (More specifically, the amount of semitones between any 2 consective notes of a chord) For example, all octaves can be used to represent the end of a statement (equivalent to semi-colon in C++). From now on, we will represent a chord by its intervals. ex: an octave is written as (8) and the chord CC#E is written as (2,4) 
+As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes. (More specifically, the amount of semitones between any 2 consective notes of a chord as opposed to intervals based on scales) For example, all octaves can be used to represent a comment. From now on, we will represent a chord by its intervals. ex: an octave is written as (13) and the chord CC#E is written as (2,4) 
 
 Some definitions listed below: 
 
-- (5): indicates the start of a function. Goes before the function identifier
-- (5,4): wrappers to indicate the start/end of a function body
-- (8): end of statement
-- (3): comment wrappers
-- 
-
+- (5): indicates the start of a function. Goes before the function identifier <def>
+- (5,4): indicates the end of a function 
+- (13): comment wrappers <#>
+- (8, 2): +
+- (8, 3): -
+- (8, 4): *
+- (8, 5): /
+- (8, 6): %
+- (7, 2): =
+- (7, 3): <
+- (7, 3): >
 
 ### Language Specification
 It will be a minimal stack based language (similar to Forth and uiua)
