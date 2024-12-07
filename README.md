@@ -99,9 +99,7 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
                    | <definition>
                    | <comment>
 
-<literal>        ::= <number>
-<number>         ::= "(" <pitch> { <pitch> } ")"
-<pitch>          ::= "C" | "C#" | "D" | "D#" | "E" | "F" | "F#" | "G" | "G#" | "A" | "A#" | "B"
+<literal>        ::= base 12 number
 
 <arithmetic-op>  ::= "+" | "-" | "*" | "/" | "%"
 
