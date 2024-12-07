@@ -13,6 +13,18 @@ esolang controlled by MIDI inputs
 
 General idea: MIDI input will be converted to a "minimal" stack based language. The language will be executed and the output will be converted back to MIDI or printed to the console.
 
+### Tokenization
+In general, there are certain chords reserved as keywords. For our purposes, a chord is defined as 2 or more notes played simultaneously. Outside of this, single notes are considered a literal and will be pushed to the stack. Chords that aren't recognized as a keyword will be read as a single note (the highest note of the chord). 
+
+As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes. (More specifically, the amount of semitones between any 2 consective notes of a chord) For example, all octaves can be used to represent the end of a statement (equivalent to semi-colon in C++). From now on, we will represent a chord by its intervals. ex: an octave is written as (8) and the chord CC#E is written as (2,4) 
+
+Some definitions listed below: 
+
+- (5,4): wrappers to indicate the start/end of a function/the entire program
+- (8): end of statement
+- 
+
+
 ### Language Specification
 It will be a minimal stack based language (similar to Forth and uiua)
 
