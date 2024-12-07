@@ -22,7 +22,7 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 
 Some definitions listed below: 
 
-- (5,4): wrappers to indicate the start/end of a function/the entire program
+- (5,4): wrappers to indicate the start/end of a function body
 - (8): end of statement
 - (3): comment wrappers
 - 
