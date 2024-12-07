@@ -13,8 +13,10 @@ esolang controlled by MIDI inputs
 
 General idea: MIDI input will be converted to a "minimal" stack based language. The language will be executed and the output will be converted back to MIDI or printed to the console.
 
-### Tokenization
+### Tokenization & Token Mapping
 In general, there are certain chords reserved as keywords. For our purposes, a chord is defined as 2 or more notes played simultaneously. Outside of this, single notes are considered a literal and will be pushed to the stack. Chords that aren't recognized as a keyword will be read as a single note (the highest note of the chord). 
+
+Speaking of literals, Polyphony operates on a base 12 number system. Each semitone represents a digit, with C being 0 and B being 11. By the way, the octave doesn't matter so both C#4 and C#5 represent 1. 
 
 As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes. (More specifically, the amount of semitones between any 2 consective notes of a chord) For example, all octaves can be used to represent the end of a statement (equivalent to semi-colon in C++). From now on, we will represent a chord by its intervals. ex: an octave is written as (8) and the chord CC#E is written as (2,4) 
 
