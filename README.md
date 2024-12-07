@@ -22,9 +22,9 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 
 Some definitions listed below: 
 
-- (5): indicates the start of a function. Goes before the function identifier <def>
-- (5,4): indicates the end of a function 
-- (13): comment wrappers <#>
+- (5): def
+- (5,4): end
+- (13): comment wrapper #
 - (8, 2): +
 - (8, 3): -
 - (8, 4): *
@@ -33,6 +33,7 @@ Some definitions listed below:
 - (7, 2): =
 - (7, 3): <
 - (7, 3): >
+- 
 
 ### Language Specification
 It will be a minimal stack based language (similar to Forth and uiua)
