@@ -22,6 +22,7 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 
 Some definitions listed below: 
 
+- (5): indicates the start of a function. Goes before the function identifier
 - (5,4): wrappers to indicate the start/end of a function body
 - (8): end of statement
 - (3): comment wrappers
@@ -121,8 +122,7 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
                    | "!"       (* Store: top of stack is value, second is address *)
                    | "@"       (* Load: push value at address to the stack *)
                    | "^"       (* Free: free memory at the address on top of the stack *)
-                   
-<identifier>     ::= f <literal> { literal }
+<identifier>     ::= <pitch> { <pitch> }
 
 <definition>     ::= "def" <identifier> <block> "end"
 
@@ -137,14 +137,14 @@ Example program:
 var A  
 
 # Define a function that adds two numbers and prints the result #
-def f4
+def C4
     input   # Take input (a number literal) #
     3 +     # Add 3 to the input #
     print   # Print the result (top of stack) #
 end
 
 # Another function that prints a message based on input comparison #
-def f5
+def D4
     input   # Take input (a number literal) #
     5 <     # Compare if input is less than 5 #
     if
@@ -160,10 +160,10 @@ end
 1 2 + 3 *      # Push 1, 2, add them, push 3, multiply the result #         
 
 # Call the function C4 to add 3 to the result and print #
-f4             # Function C4 gets called, prints input + 3 #
+C4             # Function C4 gets called, prints input + 3 #
 
 # Now call D4 with the result of the previous operation #
-f5             # Function D4 compares the input and prints accordingly #
+D4             # Function D4 compares the input and prints accordingly #
 
 # Manipulating variables: Storing the result of the multiplication in "A" #
 !              # Store top of stack into "A" #
