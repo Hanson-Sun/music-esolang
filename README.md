@@ -20,20 +20,52 @@ Speaking of literals, Polyphony operates on a base 12 number system. Each semito
 
 As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes. (More specifically, the amount of semitones between any 2 consective notes of a chord as opposed to intervals based on scales) For example, all octaves can be used to represent a comment. From now on, we will represent a chord by its intervals. ex: an octave is written as (13) and the chord CC#E is written as (2,4) 
 
-Some definitions listed below: 
+Some definitions listed (read below sections for further specification of definitions): 
 
 - (5): def
-- (5,4): end
+- (5, 4): end
 - (13): comment wrapper #
+
+**arithmetic operations**
 - (8, 2): +
 - (8, 3): -
 - (8, 4): *
 - (8, 5): /
 - (8, 6): %
+
+**logical operations (binary)**
 - (7, 2): =
 - (7, 3): <
 - (7, 3): >
-- 
+
+**logical operations (unary)**
+- (6, 2): &
+- (6, 3): |
+- (6, 4): ~
+
+**stack manipulation**
+- (9, 2): pop
+- (9, 3): dup
+- (9, 4): dup.
+- (9, 5): swap
+- (9, 6): size
+
+**i/o operations**
+- (5, 4, 4): input
+- (5, 4, 5): print
+- (5, 4, 6): print-
+- (5, 4, 7): debug
+
+**conditionals & branching**
+- (5, 5, 4): if
+- (5, 5, 5): else
+- (5, 5, 6): while
+
+**variables**
+- (8): var
+- (9): !
+- (10): @
+- (11): ^
 
 ### Language Specification
 It will be a minimal stack based language (similar to Forth and uiua)
