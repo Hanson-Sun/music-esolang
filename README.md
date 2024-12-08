@@ -2,11 +2,11 @@
 esolang controlled by MIDI inputs
 
 ## TODO
-- [ ] BRO LITERALLY EVERYTHING
-- [ ] Grammar
+- [x] Grammar
+- [x] MIDI reading
 - [ ] Tokenization
-- [ ] MIDI parsing
-- [ ] WRITING THE MF INTERPRETER!!
+- [ ] Parsing
+- [ ] Interpreter and execution
 
 
 ## Language Design Ideas
@@ -20,12 +20,15 @@ Speaking of literals, Polyphony operates on a base 12 number system. Each semito
 
 As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes. (More specifically, the amount of semitones between any 2 consective notes of a chord as opposed to intervals based on scales) For example, all octaves can be used to represent a comment. From now on, we will represent a chord by its intervals. ex: an octave is written as (13) and the chord CC#E is written as (2,4) 
 
+If a chord that is not recognized as a keyword is played, the highest note of the chord will be used as the literal.
+
 Some definitions listed (read below sections for further specification of definitions): 
 
 - (5): `def`
 - (5, 4): `end`
 - (13): `#`
 - (4): end of literal 
+- need start of identifier call
 
 **arithmetic operations**
 - (8, 2): `+`
@@ -141,8 +144,9 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
                    | <variable-op>
                    | <definition>
                    | <comment>
+                   | <identifier-call>
 
-<literal>        ::= base 12 number
+<literal>        ::= <base 12 number> { "end" }
 
 <arithmetic-op>  ::= "+" | "-" | "*" | "/" | "%"
 
@@ -161,9 +165,12 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
                    | "!"       (* Store: top of stack is value, second is address *)
                    | "@"       (* Load: push value at address to the stack *)
                    | "^"       (* Free: free memory at the address on top of the stack *)
-<identifier>     ::= <pitch> { <pitch> }
 
-<definition>     ::= "def" <identifier> <block> "end"
+<identifier>     ::= <pitch> | <chord> { <pitch> | <chord> }
+
+<identifer-call> ::= "f" <identifier> "end"      
+
+<definition>     ::= "def" <identifier> "end" <block> "end"
 
 <comment>        ::= "#" { <note> } "#"
 ```
@@ -173,17 +180,17 @@ Example program:
 # This program demonstrates various features of the Polyphony #
 
 # Variable declaration: Create a variable "A" #
-var A  
+var A end
 
 # Define a function that adds two numbers and prints the result #
-def C4
+def 11 end
     input   # Take input (a number literal) #
     3 +     # Add 3 to the input #
     print   # Print the result (top of stack) #
 end
 
 # Another function that prints a message based on input comparison #
-def D4
+def 12 end
     input   # Take input (a number literal) #
     5 <     # Compare if input is less than 5 #
     if
@@ -196,13 +203,13 @@ def D4
 end
 
 # Main program flow #
-1 2 + 3 *      # Push 1, 2, add them, push 3, multiply the result #         
+1 end 2 + 3 *      # Push 1, 2, add them, push 3, multiply the result. End is required to delimit the two literals #         
 
 # Call the function C4 to add 3 to the result and print #
-C4             # Function C4 gets called, prints input + 3 #
+f 11 end             # Function 11 gets called, prints input + 3 #
 
 # Now call D4 with the result of the previous operation #
-D4             # Function D4 compares the input and prints accordingly #
+f 12 end             # Function 12 compares the input and prints accordingly #
 
 # Manipulating variables: Storing the result of the multiplication in "A" #
 !              # Store top of stack into "A" #
@@ -210,7 +217,7 @@ D4             # Function D4 compares the input and prints accordingly #
 print          # Print value of "A" #
 
 # A loop that will repeat 3 times, decrementing the counter each time #
-var counter
+var counter end
 3 !            # Store 3 in counter #
 while
     counter @  # Get counter value #
