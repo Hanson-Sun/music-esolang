@@ -25,6 +25,7 @@ Some definitions listed (read below sections for further specification of defini
 - (5): def
 - (5, 4): end
 - (13): comment wrapper #
+- (4): end of literal 
 
 **arithmetic operations**
 - (8, 2): +
