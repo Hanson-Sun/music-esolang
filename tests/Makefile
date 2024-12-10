@@ -8,7 +8,7 @@ SRCS2 = tokenTest.cpp ../src/Tokenizer.cpp
 OBJS1 = $(SRCS1:.cpp=.o)
 OBJS2 = $(SRCS2:.cpp=.o)
 
-TARGETS = midiTest
+TARGETS = midiTest tokenTest
 
 all: $(TARGETS)
 
