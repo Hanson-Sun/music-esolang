@@ -22,6 +22,6 @@ tokenTest: $(OBJS2)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS1) $(TARGETS)
+	rm -f $(OBJS1) $(OBJS2) $(TARGETS)
 
 .PHONY: all clean
