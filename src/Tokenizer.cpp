@@ -41,17 +41,17 @@ std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
 };
 
 Tokenizer::Tokenizer(std::string file) : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
-    
+    what = true;
     // get the first track IDGAF IDGAF IDGAF
-    int i = 0;
-    for (auto& track : midi) {
-        if (i == 0) {
-            groupIt = track.group_begin();
-        } else if (i > 0) {
-            break;
-        }
-        i++;
-    }
+    // int i = 0;
+    // for (auto& track : midi) {
+    //     if (i == 0) {
+    //         groupIt = track.group_begin();
+    //     } else if (i > 0) {
+    //         break;
+    //     }
+    //     i++;
+    // }
 
     currentToken = chordToToken();
 
@@ -59,6 +59,7 @@ Tokenizer::Tokenizer(std::string file) : file(file), midi(mr.read(file)), groupI
 
 
 Tokenizer Tokenizer::operator++() {
+    what = true;
     currentToken = chordToToken();
     return *this;
 }
@@ -67,11 +68,11 @@ Token Tokenizer::chordToToken() {
     TokenType type = peek();
     switch(type) {
         case TokenType::DIGIT:
-            std::cout << "what the number" << std::endl;
+            //std::cout << "what the number" << std::endl;
             return chordToNumber();
             break;
         default:
-            std::cout << "what the sigma!" << std::endl;
+            //std::cout << "what the sigma!" << std::endl;
             return chordToKeyword();
     }
 }
@@ -79,21 +80,27 @@ Token Tokenizer::chordToToken() {
 std::string Tokenizer::formatCurrentChord() {
     
     auto chord = *groupIt;
-    // std::sort(chord.begin(), chord.end(), [](const MidiNote& a, const MidiNote& b) {
-    //     return a.pitch < b.pitch;
-    // });
     std::string chordLexeme = "(";
+    int prev = -1;
     for (auto noteIt : chord) {
         const MidiNote& note = *noteIt;
-        chordLexeme += std::to_string(note.pitch) + ", ";
+        if (prev == -1) {
+            prev = note.pitch;
+        } else {
+            chordLexeme += std::to_string(note.pitch-prev+1) + ", ";
+            prev = note.pitch;
+        }
     }
-    std::cout << chordLexeme.substr(0, chordLexeme.size() - 2) + ")" << std::endl;
+    //std::cout << chordLexeme.substr(0, chordLexeme.size() - 2) + ")" << std::endl;
     return chordLexeme = chordLexeme.substr(0, chordLexeme.size() - 2) + ")";
 }
 
 TokenType Tokenizer::peek() {
     std::string chordLexeme = formatCurrentChord();
-    if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
+    if (chordLexeme == "()") {
+        std::cout << "oh" << std::endl;
+        return TokenType::DIGIT;
+    } else if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
         return CHORDTOKENMAP[chordLexeme];
     } else {
         return TokenType::DIGIT;
@@ -101,42 +108,32 @@ TokenType Tokenizer::peek() {
 }
 
 Token Tokenizer::chordToIdentifier() {
-    auto it = groupIt;
     std::vector<std::string> yeah;
-    while(it != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
+    while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
         auto chord = *groupIt;
-        // std::sort(chord.begin(), chord.end(), [](const MidiNote& a, const MidiNote& b) {
-        //     return a.pitch > b.pitch;
-        // });
-        // shutup
         for (auto noteIt : chord) {
             const MidiNote& note = *noteIt;
             yeah.push_back(pitchToNoteName(note.pitch));
             break;
         }
-        ++it;
+        ++groupIt;
     }
-    ++groupIt;
+    //++groupIt;
     return Token(TokenType::IDENTIFIER, std::to_string(base12toDecimal(yeah)));
 }
 
 Token Tokenizer::chordToNumber() {
-    auto it = groupIt;
     std::vector<std::string> yeah;
-    while(it != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
+    while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
         auto chord = *groupIt;
-        // std::sort(chord.begin(), chord.end(), [](const MidiNote& a, const MidiNote& b) {
-        //     return a.pitch > b.pitch;
-        // });
-        // shutup
         for (auto noteIt : chord) {
             const MidiNote& note = *noteIt;
             yeah.push_back(pitchToNoteName(note.pitch));
             break;
         }
-        ++it;
+        ++groupIt;
     }
-    ++groupIt;
+    //++groupIt;
     return Token(TokenType::NUMBER, std::to_string(base12toDecimal(yeah)));
 }
 
@@ -144,7 +141,7 @@ int Tokenizer::base12toDecimal(std::vector<std::string> base12) {
     std::unordered_map<std::string, int> base12Map = {{"C", 0}, {"C#", 1}, {"D", 2}, {"D#", 3}, {"E", 4}, {"F", 5}, {"F#", 6}, {"G", 7}, {"G#", 8}, {"A", 9}, {"A#", 10}, {"B", 11}};
     int decimal = 0;
     for (int i = 0; i<base12.size(); i++) {
-        decimal += base12Map[base12[i]] * std::pow(12, i);
+        decimal += base12Map[base12[i]] * std::pow(12, base12.size()-1-i);
     }
     return decimal;
 }
@@ -158,9 +155,10 @@ std::string Tokenizer::pitchToNoteName(int pitch) {
 Token Tokenizer::chordToKeyword() {
     std::string chordLexeme = formatCurrentChord();
     if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
+        std::cout << "what the " << chordLexeme << std::endl;
+        ++(groupIt);
         return Token(CHORDTOKENMAP[chordLexeme], chordLexeme);
     } else {
         throw std::runtime_error("Invalid chord: " + chordLexeme);
     }
-    ++(groupIt);
 }
