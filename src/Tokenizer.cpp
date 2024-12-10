@@ -67,9 +67,11 @@ Token Tokenizer::chordToToken() {
     TokenType type = peek();
     switch(type) {
         case TokenType::DIGIT:
+            std::cout << "what the number" << std::endl;
             return chordToNumber();
             break;
         default:
+            std::cout << "what the sigma!" << std::endl;
             return chordToKeyword();
     }
 }
@@ -85,6 +87,7 @@ std::string Tokenizer::formatCurrentChord() {
         const MidiNote& note = *noteIt;
         chordLexeme += std::to_string(note.pitch) + ", ";
     }
+    std::cout << chordLexeme.substr(0, chordLexeme.size() - 2) + ")" << std::endl;
     return chordLexeme = chordLexeme.substr(0, chordLexeme.size() - 2) + ")";
 }
 

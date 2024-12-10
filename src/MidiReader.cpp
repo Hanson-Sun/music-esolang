@@ -30,6 +30,11 @@ std::vector<MidiTrack::const_iterator> MidiTrack::findChord(const_iterator noteI
         }
     }
 
+    //sorted here guh
+    std::sort(chord.begin(), chord.end(), [](const_iterator a, const_iterator b) {
+        return (*a).pitch > (*b).pitch;
+    });
+
     return chord;
 }
 
@@ -42,6 +47,11 @@ std::vector<MidiTrack::iterator> MidiTrack::findChord(iterator noteIt) {
             chord.push_back(it);
         }
     }
+
+    //sorted here guh
+    std::sort(chord.begin(), chord.end(), [](const_iterator a, const_iterator b) {
+        return (*a).pitch < (*b).pitch;
+    });
 
     return chord;
 }
