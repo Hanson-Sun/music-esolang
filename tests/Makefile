@@ -2,7 +2,7 @@ CXX = g++
 
 CXXFLAGS = -Wall -Wextra -std=c++17 -I../include -I./
 
-SRCS1 = ../src/MidiReader.cpp midiTest.cpp
+SRCS1 = ../src/MidiReader.cpp midiTest.cpp ../src/Tokenizer.cpp
 
 OBJS1 = $(SRCS1:.cpp=.o)
 

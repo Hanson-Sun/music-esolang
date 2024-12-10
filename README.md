@@ -27,8 +27,7 @@ Some definitions listed (read below sections for further specification of defini
 - (5): `def`
 - (5, 4): `end`
 - (13): `#`
-- (4): end of literal 
-- need start of identifier call
+- (4): `f` start of identifier call 
 
 **arithmetic operations**
 - (8, 2): `+`
@@ -40,7 +39,7 @@ Some definitions listed (read below sections for further specification of defini
 **logical operations (binary)**
 - (7, 2): `=`
 - (7, 3): `<`
-- (7, 3): `>`
+- (7, 4): `>`
 
 **logical operations (unary)**
 - (6, 2): `&`
