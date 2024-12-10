@@ -3,12 +3,12 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -I../include -I./
 
 SRCS1 = midiTest.cpp ../src/MidiReader.cpp
-SRCS2 = tokenTest.cpp ../src/Tokenizer.cpp
+SRCS2 = tokenTest.cpp ../src/Tokenizer.cpp ../src/MidiReader.cpp
 
 OBJS1 = $(SRCS1:.cpp=.o)
-OBJS2 = $(SRCS2:.cpp=.o)
+OBJS2 = $(SRCS2:.cpp=.o) 
 
-TARGETS = midiTest
+TARGETS = midiTest tokenTest
 
 all: $(TARGETS)
 
@@ -22,6 +22,6 @@ tokenTest: $(OBJS2)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS1) $(TARGETS)
+	rm -f $(OBJS1) $(OBJS2) $(TARGETS)
 
 .PHONY: all clean
