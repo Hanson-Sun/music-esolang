@@ -81,6 +81,7 @@ class Token{
     public:
         TokenType type;
         std::string chordLexeme;
+        Token() {};
         Token(TokenType type, std::string chordLexeme): type(type), chordLexeme(chordLexeme) {};
         std::string toString() {return chordLexeme+" ";};
 };
@@ -112,9 +113,13 @@ class Tokenizer {
         Midi midi;
         MidiTrack::GroupIterator *groupIt;
         Token currentToken;
+        Token chordToToken();
         Token chordToKeyword();
-        Token chordToLiteral();
+        Token chordToNumber();
+        Token chordToIdentifier();
         std::string formatCurrentChord();
+        std::string pitchToNoteName(int pitch);
+        int base12toDecimal(std::vector<std::string> base12);
         TokenType peek();
 };
 #endif
