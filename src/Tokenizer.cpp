@@ -42,12 +42,12 @@ std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
 
 Tokenizer::Tokenizer(std::string file) : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
     
-    // get the second track for some reason idk
+    // get the first track IDGAF IDGAF IDGAF
     int i = 0;
     for (auto& track : midi) {
-        if (i == 1) {
+        if (i == 0) {
             groupIt = track.group_begin();
-        } else if (i > 1) {
+        } else if (i > 0) {
             break;
         }
         i++;
@@ -67,7 +67,8 @@ Token Tokenizer::chordToToken() {
     TokenType type = peek();
     switch(type) {
         case TokenType::DIGIT:
-            return chordToNumber();;
+            return chordToNumber();
+            break;
         default:
             return chordToKeyword();
     }
@@ -92,7 +93,6 @@ TokenType Tokenizer::peek() {
     if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
         return CHORDTOKENMAP[chordLexeme];
     } else {
-        std::cout << "cwhat" << chordLexeme << std::endl;
         return TokenType::DIGIT;
     }
 }
@@ -113,6 +113,7 @@ Token Tokenizer::chordToIdentifier() {
         }
         ++it;
     }
+    ++groupIt;
     return Token(TokenType::IDENTIFIER, std::to_string(base12toDecimal(yeah)));
 }
 
@@ -132,6 +133,7 @@ Token Tokenizer::chordToNumber() {
         }
         ++it;
     }
+    ++groupIt;
     return Token(TokenType::NUMBER, std::to_string(base12toDecimal(yeah)));
 }
 

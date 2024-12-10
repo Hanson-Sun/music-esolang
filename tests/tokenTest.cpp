@@ -4,7 +4,7 @@
 
 int main() {
 
-    Tokenizer tokenizer("../midi/chordTest.mid");
+    Tokenizer tokenizer("../midi/tokentest1.mid");
     while (tokenizer) {
         std::cout << (*tokenizer).toString();
         ++tokenizer;
