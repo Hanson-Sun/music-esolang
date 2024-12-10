@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <cmath>
 #include "Tokenizer.h"
 #include "../include/MidiReader.h"
 
@@ -127,7 +128,7 @@ int Tokenizer::base12toDecimal(std::vector<std::string> base12) {
     std::unordered_map<std::string, int> base12Map = {{"C", 0}, {"C#", 1}, {"D", 2}, {"D#", 3}, {"E", 4}, {"F", 5}, {"F#", 6}, {"G", 7}, {"G#", 8}, {"A", 9}, {"A#", 10}, {"B", 11}};
     int decimal = 0;
     for (int i = 0; i<base12.size(); i++) {
-        decimal += base12Map[base12[i]] * pow(12, i);
+        decimal += base12Map[base12[i]] * std::pow(12, i);
     }
     return decimal;
 }
