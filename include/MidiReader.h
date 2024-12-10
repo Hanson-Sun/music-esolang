@@ -20,7 +20,7 @@ class MidiTrack {
 
  public:
     MidiTrack() {}
-    explicit MidiTrack(const std::vector<MidiNote>& notes) : notes(notes) {}
+    explicit MidiTrack(const std::vector<MidiNote>& notes) : notes(notes) {};
     void addNote(const MidiNote& note) {notes.push_back(note);}
     const std::vector<MidiNote>& getNotes() const {return notes;}
     void setNotes(const std::vector<MidiNote>& new_notes) {notes = new_notes;}
@@ -58,6 +58,12 @@ class MidiTrack {
         using iterator_category = std::forward_iterator_tag;
 
         GroupIterator(TrackType& track, iterator start);
+
+        // Copy constructor
+        GroupIterator(const GroupIterator& other);
+
+        // Copy assignment operator
+        GroupIterator& operator=(const GroupIterator& other);
 
         value_type operator*() const { return lastChord; }
 

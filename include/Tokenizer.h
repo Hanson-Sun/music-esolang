@@ -71,13 +71,13 @@ class Tokenizer {
         Tokenizer operator++();
         
         explicit operator bool() {
-            return *groupIt != midi.begin()->group_end();
+            return groupIt != midi.begin()->group_end();
         }
     private:
         std::string file;
         MidiReader mr;
         Midi midi;
-        MidiTrack::GroupIterator *groupIt;
+        MidiTrack::GroupIterator groupIt;
         Token currentToken;
         Token chordToToken();
         Token chordToKeyword();

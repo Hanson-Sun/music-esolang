@@ -5,6 +5,21 @@
 #include <iostream>
 #include <algorithm>
 
+// Copy constructor
+MidiTrack::GroupIterator::GroupIterator(const GroupIterator& other)
+    : track(other.track), current(other.current), lastChord{other.lastChord}, chordCache(other.chordCache){}
+
+// Copy assignment operator
+MidiTrack::GroupIterator& MidiTrack::GroupIterator::operator=(const GroupIterator& other) {
+    if (this != &other) {
+        track = other.track;
+        current = other.current;
+        lastChord = other.lastChord;
+        chordCache = other.chordCache;
+    }
+    return *this;
+}
+
 std::vector<MidiTrack::const_iterator> MidiTrack::findChord(const_iterator noteIt) const {
     std::vector<const_iterator> chord;
     const MidiNote& note = *noteIt;
