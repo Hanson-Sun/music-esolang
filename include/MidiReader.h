@@ -1,3 +1,6 @@
+#ifndef MIDIREADER_H
+#define MIDIREADER_H
+
 #include <algorithm>
 #include <string>
 #include <unordered_set>
@@ -114,3 +117,4 @@ class MidiReader {
     static MidiTrack parseTrack(const std::vector<char>& trackData);
     static MidiNote parseMidiEvent(const std::vector<char>& trackData, size_t& pos);
 };
+#endif
