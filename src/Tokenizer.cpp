@@ -40,12 +40,23 @@ std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(11)", TokenType::FREE},
 };
 
-Tokenizer::Tokenizer(std::string file) : file(file) {
-    midi = mr.read(file);
-    auto groupBegin = midi.begin()->group_begin();
-    groupIt = &groupBegin;
+Tokenizer::Tokenizer(std::string file) : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
+    
+    // get the second track for some reason idk
+    int i = 0;
+    for (auto& track : midi) {
+        if (i == 1) {
+            groupIt = track.group_begin();
+        } else if (i > 1) {
+            break;
+        }
+        i++;
+    }
+
     currentToken = chordToToken();
+
 }
+
 
 Tokenizer Tokenizer::operator++() {
     currentToken = chordToToken();
@@ -55,17 +66,16 @@ Tokenizer Tokenizer::operator++() {
 Token Tokenizer::chordToToken() {
     TokenType type = peek();
     switch(type) {
-        case TokenType::IDENTIFIER:
-            return chordToIdentifier();
-        case TokenType::NUMBER:
-            return chordToNumber();
+        case TokenType::DIGIT:
+            return chordToNumber();;
         default:
             return chordToKeyword();
     }
 }
 
 std::string Tokenizer::formatCurrentChord() {
-    auto chord = **groupIt;
+    
+    auto chord = *groupIt;
     // std::sort(chord.begin(), chord.end(), [](const MidiNote& a, const MidiNote& b) {
     //     return a.pitch < b.pitch;
     // });
@@ -82,15 +92,16 @@ TokenType Tokenizer::peek() {
     if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
         return CHORDTOKENMAP[chordLexeme];
     } else {
+        std::cout << "cwhat" << chordLexeme << std::endl;
         return TokenType::DIGIT;
     }
 }
 
 Token Tokenizer::chordToIdentifier() {
-    auto it = *groupIt;
+    auto it = groupIt;
     std::vector<std::string> yeah;
     while(it != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
-        auto chord = **groupIt;
+        auto chord = *groupIt;
         // std::sort(chord.begin(), chord.end(), [](const MidiNote& a, const MidiNote& b) {
         //     return a.pitch > b.pitch;
         // });
@@ -106,10 +117,10 @@ Token Tokenizer::chordToIdentifier() {
 }
 
 Token Tokenizer::chordToNumber() {
-    auto it = *groupIt;
+    auto it = groupIt;
     std::vector<std::string> yeah;
     while(it != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
-        auto chord = **groupIt;
+        auto chord = *groupIt;
         // std::sort(chord.begin(), chord.end(), [](const MidiNote& a, const MidiNote& b) {
         //     return a.pitch > b.pitch;
         // });
@@ -146,5 +157,5 @@ Token Tokenizer::chordToKeyword() {
     } else {
         throw std::runtime_error("Invalid chord: " + chordLexeme);
     }
-    ++(*groupIt);
+    ++(groupIt);
 }
