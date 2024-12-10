@@ -1,3 +1,5 @@
 .vscode
 *.o
 build/
+tests/midiTest
+tests/tokenTest
