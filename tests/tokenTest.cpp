@@ -3,6 +3,7 @@
 #include "../include/Tokenizer.h"
 
 int main() {
+
     Tokenizer tokenizer("../midi/chordTest.mid");
     while (tokenizer) {
         std::cout << (*tokenizer).toString();
