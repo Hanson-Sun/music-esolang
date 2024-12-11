@@ -70,7 +70,7 @@ Token Tokenizer::chordToToken() {
     TokenType type = peek();
     switch(type) {
         case TokenType::DIGIT:
-            return chordToNumber();
+            return chordToLiteral();
             break;
         case TokenType::COMMENT:   
             return chordToComment();
@@ -126,22 +126,7 @@ Token Tokenizer::chordToComment() {
     return Token(TokenType::COMMENT, std::to_string(base12toDecimal(yeah)));
 }
 
-Token Tokenizer::chordToIdentifier() {
-    std::vector<std::string> yeah;
-    while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
-        auto chord = *groupIt;
-        for (auto noteIt : chord) {
-            const MidiNote& note = *noteIt;
-            yeah.push_back(pitchToNoteName(note.pitch));
-            break;
-        }
-        ++groupIt;
-    }
-    //++groupIt;
-    return Token(TokenType::IDENTIFIER, std::to_string(base12toDecimal(yeah)));
-}
-
-Token Tokenizer::chordToNumber() {
+Token Tokenizer::chordToLiteral() {
     std::vector<std::string> yeah;
     while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
         auto chord = *groupIt;
@@ -151,7 +136,7 @@ Token Tokenizer::chordToNumber() {
         ++groupIt;
     }
     //++groupIt;
-    return Token(TokenType::NUMBER, std::to_string(base12toDecimal(yeah)));
+    return Token(TokenType::LITERAL, std::to_string(base12toDecimal(yeah)));
 }
 
 int Tokenizer::base12toDecimal(std::vector<std::string> base12) {

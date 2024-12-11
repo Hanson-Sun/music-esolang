@@ -33,8 +33,7 @@ enum TokenType{
     WHILE,
     VAR, 
     F, // start of identifier 
-    IDENTIFIER, // names of functions & variables ig
-    NUMBER, // for literals
+    LITERAL, // for literals (numbers & identifiers)
     STORE, // !
     LOAD, // @
     FREE, // ^
@@ -82,9 +81,8 @@ class Tokenizer {
         Token currentToken;
         Token chordToToken();
         Token chordToKeyword();
-        Token chordToNumber();
+        Token chordToLiteral();
         Token chordToComment();
-        Token chordToIdentifier();
         std::string formatCurrentChord();
         std::string pitchToNoteName(int pitch);
         int base12toDecimal(std::vector<std::string> base12);
