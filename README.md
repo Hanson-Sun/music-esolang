@@ -4,7 +4,7 @@ esolang controlled by MIDI inputs
 ## TODO
 - [x] Grammar
 - [x] MIDI reading
-- [ ] Tokenization
+- [x] Tokenization
 - [ ] Parsing
 - [ ] Interpreter and execution
 
