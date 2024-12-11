@@ -1,5 +1,4 @@
-#ifndef MIDIREADER_H
-#define MIDIREADER_H
+#pragma once
 
 #include <algorithm>
 #include <string>
@@ -20,10 +19,10 @@ class MidiTrack {
 
  public:
     MidiTrack() {}
-    explicit MidiTrack(const std::vector<MidiNote>& notes) : notes(notes) {};
-    void addNote(const MidiNote& note) {notes.push_back(note);}
-    const std::vector<MidiNote>& getNotes() const {return notes;}
-    void setNotes(const std::vector<MidiNote>& new_notes) {notes = new_notes;}
+    explicit MidiTrack(const std::vector<MidiNote>& notes) : notes(notes) {}
+    void addNote(const MidiNote& note) { notes.push_back(note); }
+    const std::vector<MidiNote>& getNotes() const { return notes; }
+    void setNotes(const std::vector<MidiNote>& new_notes) { notes = new_notes; }
 
     using iterator = std::vector<MidiNote>::iterator;
     using const_iterator = std::vector<MidiNote>::const_iterator;
@@ -43,8 +42,8 @@ class MidiTrack {
 
     class GroupIterator {
      private:
-        using TrackType =
-            typename std::conditional<std::is_const<iterator>::value, const MidiTrack, MidiTrack>::type;
+        using TrackType = typename std::conditional<std::is_const<iterator>::value, const MidiTrack,
+                                                    MidiTrack>::type;
         TrackType& track;
         iterator current;
         std::vector<iterator> lastChord;
@@ -71,13 +70,11 @@ class MidiTrack {
 
         GroupIterator& operator++();
 
-        bool operator!=(const GroupIterator& other) const {
-            return current != other.current;
-        }
+        bool operator!=(const GroupIterator& other) const { return current != other.current; }
+
      private:
         std::vector<iterator> findChordWithCache(iterator noteIt);
     };
-
 
     GroupIterator group_begin() { return GroupIterator(*this, begin()); }
     GroupIterator group_end() { return GroupIterator(*this, end()); }
@@ -122,4 +119,4 @@ class MidiReader {
     static MidiTrack parseTrack(const std::vector<char>& trackData);
     static MidiNote parseMidiEvent(const std::vector<char>& trackData, size_t& pos);
 };
-#endif
+

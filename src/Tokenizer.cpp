@@ -1,12 +1,14 @@
+#include "Tokenizer.h"
+#include "MidiReader.h"
+
+#include <cmath>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <unordered_map>
-#include <cmath>
-#include "Tokenizer.h"
-#include "../include/MidiReader.h"
+#include <vector>
 
-std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
+
+const std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(5)", TokenType::DEF},
     {"(5, 4)", TokenType::END},
     {"(13)", TokenType::COMMENT},
@@ -40,35 +42,34 @@ std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(11)", TokenType::FREE},
 };
 
-Tokenizer::Tokenizer(std::string file) : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
+Tokenizer::Tokenizer(std::string file)
+    : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
     currentToken = chordToToken();
 }
-
 
 Tokenizer::TokenizerIterator Tokenizer::TokenizerIterator::operator++() {
     tokenizer->currentToken = tokenizer->chordToToken();
     if (!(tokenizer->groupIt != tokenizer->midi.begin()->group_end())) {
-       what++;
-    } 
+        what++;
+    }
     return *this;
 }
 
 Token Tokenizer::chordToToken() {
     TokenType type = peek();
-    switch(type) {
+    switch (type) {
         case TokenType::DIGIT:
             return chordToLiteral();
             break;
-        case TokenType::COMMENT:   
+        case TokenType::COMMENT:
             return chordToComment();
-            break;            
+            break;
         default:
             return chordToKeyword();
     }
 }
 
 std::string Tokenizer::formatCurrentChord() {
-    
     auto chord = *groupIt;
     std::string chordLexeme = "(";
     int prev = -1;
@@ -77,21 +78,21 @@ std::string Tokenizer::formatCurrentChord() {
         if (prev == -1) {
             prev = note.pitch;
         } else {
-            chordLexeme += std::to_string(note.pitch-prev+1) + ", ";
+            chordLexeme += std::to_string(note.pitch - prev + 1) + ", ";
             prev = note.pitch;
         }
     }
-    //std::cout << chordLexeme.substr(0, chordLexeme.size() - 2) + ")" << std::endl;
+    // std::cout << chordLexeme.substr(0, chordLexeme.size() - 2) + ")" << std::endl;
     return chordLexeme = chordLexeme.substr(0, chordLexeme.size() - 2) + ")";
 }
 
 TokenType Tokenizer::peek() {
     std::string chordLexeme = formatCurrentChord();
     if (chordLexeme == "()") {
-        //std::cout << "oh" << std::endl;
+        // std::cout << "oh" << std::endl;
         return TokenType::DIGIT;
     } else if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
-        return CHORDTOKENMAP[chordLexeme];
+        return CHORDTOKENMAP.at(chordLexeme);
     } else {
         return TokenType::DIGIT;
     }
@@ -100,7 +101,7 @@ TokenType Tokenizer::peek() {
 Token Tokenizer::chordToComment() {
     std::vector<std::string> yeah;
     ++groupIt;
-    while(groupIt != midi.begin()->group_end() && peek() != TokenType::COMMENT) {
+    while (groupIt != midi.begin()->group_end() && peek() != TokenType::COMMENT) {
         auto chord = *groupIt;
         for (auto noteIt : chord) {
             const MidiNote& note = *noteIt;
@@ -115,28 +116,29 @@ Token Tokenizer::chordToComment() {
 
 Token Tokenizer::chordToLiteral() {
     std::vector<std::string> yeah;
-    while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
+    while (groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
         auto chord = *groupIt;
-        
-        auto noteIt = chord[chord.size()-1];
+
+        auto noteIt = chord[chord.size() - 1];
         yeah.push_back(pitchToNoteName((noteIt)->pitch));
         ++groupIt;
     }
-    //++groupIt;
     return Token(TokenType::LITERAL, std::to_string(base12toDecimal(yeah)));
 }
 
 int Tokenizer::base12toDecimal(std::vector<std::string> base12) {
-    std::unordered_map<std::string, int> base12Map = {{"C", 0}, {"C#", 1}, {"D", 2}, {"D#", 3}, {"E", 4}, {"F", 5}, {"F#", 6}, {"G", 7}, {"G#", 8}, {"A", 9}, {"A#", 10}, {"B", 11}};
+    static const std::unordered_map<std::string, int> base12Map = {{"C", 0},  {"C#", 1}, {"D", 2},   {"D#", 3},
+                                                      {"E", 4},  {"F", 5},  {"F#", 6},  {"G", 7},
+                                                      {"G#", 8}, {"A", 9},  {"A#", 10}, {"B", 11}};
     int decimal = 0;
-    for (int i = 0; i<base12.size(); i++) {
-        decimal += base12Map[base12[i]] * std::pow(12, base12.size()-1-i);
+    for (size_t i = 0; i < base12.size(); i++) {
+        decimal += base12Map.at(base12[i]) * std::pow(12, base12.size() - 1 - i);
     }
     return decimal;
 }
 
 std::string Tokenizer::pitchToNoteName(int pitch) {
-   std::string noteNames[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    static const std::string noteNames[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     int index = pitch % 12;
     return noteNames[index];
 }
@@ -144,9 +146,9 @@ std::string Tokenizer::pitchToNoteName(int pitch) {
 Token Tokenizer::chordToKeyword() {
     std::string chordLexeme = formatCurrentChord();
     if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
-        //std::cout << "what the " << chordLexeme << std::endl;
+        // std::cout << "what the " << chordLexeme << std::endl;
         ++(groupIt);
-        return Token(CHORDTOKENMAP[chordLexeme], chordLexeme);
+        return Token(CHORDTOKENMAP.at(chordLexeme), chordLexeme);
     } else {
         throw std::runtime_error("Invalid chord: " + chordLexeme);
     }

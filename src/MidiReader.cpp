@@ -1,13 +1,16 @@
 #include "MidiReader.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 
 // Copy constructor
 MidiTrack::GroupIterator::GroupIterator(const GroupIterator& other)
-    : track(other.track), current(other.current), lastChord{other.lastChord}, chordCache(other.chordCache){}
+    : track(other.track),
+      current(other.current),
+      lastChord{other.lastChord},
+      chordCache(other.chordCache) {}
 
 // Copy assignment operator
 MidiTrack::GroupIterator& MidiTrack::GroupIterator::operator=(const GroupIterator& other) {
@@ -30,10 +33,9 @@ std::vector<MidiTrack::const_iterator> MidiTrack::findChord(const_iterator noteI
         }
     }
 
-    //sorted here guh
-    std::sort(chord.begin(), chord.end(), [](const_iterator a, const_iterator b) {
-        return (*a).pitch > (*b).pitch;
-    });
+    // sorted here guh
+    std::sort(chord.begin(), chord.end(),
+              [](const_iterator a, const_iterator b) { return (*a).pitch > (*b).pitch; });
 
     return chord;
 }
@@ -48,16 +50,15 @@ std::vector<MidiTrack::iterator> MidiTrack::findChord(iterator noteIt) {
         }
     }
 
-    //sorted here guh
-    std::sort(chord.begin(), chord.end(), [](const_iterator a, const_iterator b) {
-        return (*a).pitch < (*b).pitch;
-    });
+    // sorted here guh
+    std::sort(chord.begin(), chord.end(),
+              [](const_iterator a, const_iterator b) { return (*a).pitch < (*b).pitch; });
 
     return chord;
 }
 
-
-MidiTrack::GroupIterator::GroupIterator(TrackType& track, iterator start) : track(track), current(start) {
+MidiTrack::GroupIterator::GroupIterator(TrackType& track, iterator start)
+    : track(track), current(start) {
     if (current == track.begin()) {
         chordCache.clear();
     }
@@ -88,7 +89,8 @@ MidiTrack::GroupIterator& MidiTrack::GroupIterator::operator++() {
     return *this;
 }
 
-std::vector<MidiTrack::iterator> MidiTrack::GroupIterator::findChordWithCache(MidiTrack::iterator noteIt) {
+std::vector<MidiTrack::iterator> MidiTrack::GroupIterator::findChordWithCache(
+    MidiTrack::iterator noteIt) {
     size_t index = std::distance(track.begin(), noteIt);
     if (chordCache.find(index) != chordCache.end()) {
         chordCache.insert(index);
@@ -103,7 +105,6 @@ std::vector<MidiTrack::iterator> MidiTrack::GroupIterator::findChordWithCache(Mi
 
     return chord;
 }
-
 
 Midi MidiReader::read(const std::string& filename) {
     Midi midi;
@@ -200,9 +201,10 @@ MidiNote MidiReader::parseMidiEvent(const std::vector<char>& trackData, size_t& 
     uint8_t status = trackData[pos++];
 
     if (status == 0xFF) {  // meta event??
-        uint8_t type = trackData[pos++];
+        // uint8_t type = trackData[pos++];
+        pos++;
         uint8_t length = trackData[pos++];
-        pos += length;                      // skip meta event data ??
+        pos += length;  // skip meta event data ??
         // if (type == 0x51 && length == 3) {  // this is really weird bruh
         //     uint32_t microseconds_per_quarter_note =
         //         (static_cast<uint8_t>(trackData[pos]) << 16) |
