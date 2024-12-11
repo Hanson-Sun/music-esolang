@@ -9,6 +9,6 @@ int main() {
         std::cout << (*tokenizer).toString();
         ++tokenizer;
     }
-    std::cout << (*tokenizer).toString();
+    //std::cout << (*tokenizer).toString();
     return 0;
 }

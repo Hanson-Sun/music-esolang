@@ -71,10 +71,10 @@ class Tokenizer {
         Tokenizer operator++();
         
         explicit operator bool() {
-            return groupIt != midi.begin()->group_end();
+            return what < 2;
         }
     private:
-        bool what; // idk either dont delete this
+        int what; // idk either dont delete this
         std::string file;
         MidiReader mr;
         Midi midi;
