@@ -75,6 +75,8 @@ class MidiTrack {
             return current != other.current;
         }
 
+        bool chordLength() const { return lastChord.size(); }
+
      private:
         std::vector<iterator> findChordWithCache(iterator noteIt);
     };

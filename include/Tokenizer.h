@@ -83,6 +83,7 @@ class Tokenizer {
         Token chordToToken();
         Token chordToKeyword();
         Token chordToNumber();
+        Token chordToComment();
         Token chordToIdentifier();
         std::string formatCurrentChord();
         std::string pitchToNoteName(int pitch);

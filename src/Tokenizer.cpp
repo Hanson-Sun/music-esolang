@@ -68,11 +68,12 @@ Token Tokenizer::chordToToken() {
     TokenType type = peek();
     switch(type) {
         case TokenType::DIGIT:
-            //std::cout << "what the number" << std::endl;
             return chordToNumber();
             break;
+        case TokenType::COMMENT:   
+            return chordToComment();
+            break;            
         default:
-            //std::cout << "what the sigma!" << std::endl;
             return chordToKeyword();
     }
 }
@@ -98,13 +99,29 @@ std::string Tokenizer::formatCurrentChord() {
 TokenType Tokenizer::peek() {
     std::string chordLexeme = formatCurrentChord();
     if (chordLexeme == "()") {
-        std::cout << "oh" << std::endl;
+        //std::cout << "oh" << std::endl;
         return TokenType::DIGIT;
     } else if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
         return CHORDTOKENMAP[chordLexeme];
     } else {
         return TokenType::DIGIT;
     }
+}
+
+Token Tokenizer::chordToComment() {
+    std::vector<std::string> yeah;
+    ++groupIt;
+    while(groupIt != midi.begin()->group_end() && peek() != TokenType::COMMENT) {
+        auto chord = *groupIt;
+        for (auto noteIt : chord) {
+            const MidiNote& note = *noteIt;
+            yeah.push_back(pitchToNoteName(note.pitch));
+            break;
+        }
+        ++groupIt;
+    }
+    ++groupIt;
+    return Token(TokenType::COMMENT, std::to_string(base12toDecimal(yeah)));
 }
 
 Token Tokenizer::chordToIdentifier() {
@@ -125,12 +142,16 @@ Token Tokenizer::chordToIdentifier() {
 Token Tokenizer::chordToNumber() {
     std::vector<std::string> yeah;
     while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
-        auto chord = *groupIt;
-        for (auto noteIt : chord) {
-            const MidiNote& note = *noteIt;
-            yeah.push_back(pitchToNoteName(note.pitch));
-            break;
+        if (groupIt.chordLength() == 1) {
+            auto chord = *groupIt;
+            auto noteIt = chord.begin();
+            yeah.push_back(pitchToNoteName((*noteIt)->pitch));
+        } else {
+            auto chord = *groupIt;
+            auto noteIt = chord.end();
+            yeah.push_back(pitchToNoteName((*noteIt)->pitch));
         }
+        
         ++groupIt;
     }
     //++groupIt;
