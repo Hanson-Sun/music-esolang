@@ -53,27 +53,32 @@ class Token{
 
 class Tokenizer {
     public:
-        using value_type = Token;
-        using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
-        using reference = value_type&;
-        using iterator_category = std::forward_iterator_tag;
+        class TokenizerIterator {
+            public:
+                using value_type = Token;
+                using difference_type = std::ptrdiff_t;
+                using pointer = value_type*;
+                using reference = value_type&;
+                using iterator_category = std::forward_iterator_tag;
 
+                TokenizerIterator(Tokenizer* tokenizer) : tokenizer(tokenizer), what(0) {};
+
+                reference operator*() {
+                    return tokenizer->currentToken;
+                }
+
+                TokenizerIterator operator++();
+
+                explicit operator bool() {
+                return what < 2;
+                }
+            private:
+                int what; // idk either dont delete this
+                Tokenizer* tokenizer;
+        };
+        friend class TokenizerIterator;
         Tokenizer(std::string file);
-
-        reference operator*() {
-            return currentToken;
-        }
-
-        void reset();
-
-        Tokenizer operator++();
-        
-        explicit operator bool() {
-            return what < 2;
-        }
     private:
-        int what; // idk either dont delete this
         std::string file;
         MidiReader mr;
         Midi midi;

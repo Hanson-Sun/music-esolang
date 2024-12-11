@@ -5,9 +5,10 @@
 int main() {
 
     Tokenizer tokenizer("../midi/tokentest2.mid");
-    while (tokenizer) {
-        std::cout << (*tokenizer).toString();
-        ++tokenizer;
+    Tokenizer::TokenizerIterator tokenizerIt(&tokenizer);
+    while (tokenizerIt) {
+        std::cout << (*tokenizerIt).toString();
+        ++tokenizerIt;
     }
     //std::cout << (*tokenizer).toString();
     return 0;

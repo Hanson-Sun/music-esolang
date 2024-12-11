@@ -41,26 +41,13 @@ std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
 };
 
 Tokenizer::Tokenizer(std::string file) : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
-    what = 0;
-    // get the first track IDGAF IDGAF IDGAF
-    // int i = 0;
-    // for (auto& track : midi) {
-    //     if (i == 0) {
-    //         groupIt = track.group_begin();
-    //     } else if (i > 0) {
-    //         break;
-    //     }
-    //     i++;
-    // }
-
     currentToken = chordToToken();
-
 }
 
 
-Tokenizer Tokenizer::operator++() {
-    currentToken = chordToToken();
-    if (!(groupIt != midi.begin()->group_end())) {
+Tokenizer::TokenizerIterator Tokenizer::TokenizerIterator::operator++() {
+    tokenizer->currentToken = tokenizer->chordToToken();
+    if (!(tokenizer->groupIt != tokenizer->midi.begin()->group_end())) {
        what++;
     } 
     return *this;
