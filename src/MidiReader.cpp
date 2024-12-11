@@ -62,9 +62,7 @@ MidiTrack::GroupIterator::GroupIterator(TrackType& track, iterator start) : trac
         chordCache.clear();
     }
 
-    if (current != track.end()) {
-        lastChord = findChordWithCache(current);
-    }
+    lastChord = findChordWithCache(current);
 }
 
 void MidiTrack::GroupIterator::reset() {
