@@ -76,6 +76,9 @@ class Tokenizer {
     friend class TokenizerIterator;
     explicit Tokenizer(std::string file);
 
+    TokenizerIterator begin() { return TokenizerIterator(this); }
+    TokenizerIterator end() { return TokenizerIterator(this); }
+
  private:
     std::string file;
     MidiReader mr;
