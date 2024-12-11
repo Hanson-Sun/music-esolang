@@ -74,6 +74,7 @@ class Tokenizer {
             return groupIt != midi.begin()->group_end();
         }
     private:
+        bool what; // idk either dont delete this
         std::string file;
         MidiReader mr;
         Midi midi;
