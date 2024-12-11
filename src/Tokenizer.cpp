@@ -155,7 +155,7 @@ std::string Tokenizer::pitchToNoteName(int pitch) {
 Token Tokenizer::chordToKeyword() {
     std::string chordLexeme = formatCurrentChord();
     if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
-        std::cout << "what the " << chordLexeme << std::endl;
+        //std::cout << "what the " << chordLexeme << std::endl;
         ++(groupIt);
         return Token(CHORDTOKENMAP[chordLexeme], chordLexeme);
     } else {
