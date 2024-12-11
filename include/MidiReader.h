@@ -74,9 +74,6 @@ class MidiTrack {
         bool operator!=(const GroupIterator& other) const {
             return current != other.current;
         }
-
-        bool chordLength() const { return lastChord.size(); }
-
      private:
         std::vector<iterator> findChordWithCache(iterator noteIt);
     };

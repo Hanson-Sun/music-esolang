@@ -144,15 +144,10 @@ Token Tokenizer::chordToIdentifier() {
 Token Tokenizer::chordToNumber() {
     std::vector<std::string> yeah;
     while(groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
-        if (groupIt.chordLength() == 1) {
-            auto chord = *groupIt;
-            auto noteIt = chord.begin();
-            yeah.push_back(pitchToNoteName((*noteIt)->pitch));
-        } else {
-            auto chord = *groupIt;
-            auto noteIt = chord.end();
-            yeah.push_back(pitchToNoteName((*noteIt)->pitch));
-        }
+        auto chord = *groupIt;
+        
+        auto noteIt = chord[chord.size()-1];
+        yeah.push_back(pitchToNoteName((noteIt)->pitch));
         ++groupIt;
     }
     //++groupIt;
