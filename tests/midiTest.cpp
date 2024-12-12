@@ -3,8 +3,7 @@
 #include "../include/Tokenizer.h"
 
 int main() {
-    MidiReader midiReader;
-    Midi midi = midiReader.read("../midi/chordTest.mid");
+    Midi midi = MidiReader::read("../midi/chordTest.mid");
 
     for (auto& track : midi) {
         for (auto groupIt = track.group_begin(); groupIt != track.group_end(); ++groupIt) {

@@ -2,9 +2,29 @@
 #include "ASTVisitor.h"
 #include "Tokenizer.h"
 
+#include <memory>
+#include <vector>
+
+using Statement_t = std::shared_ptr<Statement>;
+using Block_t = std::shared_ptr<Block>;
+using Identifier_t = std::shared_ptr<Identifier>;
+using Program_t = std::shared_ptr<Program>;
+using Definition_t = std::shared_ptr<Definition>;
+using IdentifierCall_t = std::shared_ptr<IdentifierCall>;
+using Literal_t = std::shared_ptr<Literal>;
+using ArithmeticOp_t = std::shared_ptr<ArithmeticOp>;
+using LogicalOp_t = std::shared_ptr<LogicalOp>;
+using StackOp_t = std::shared_ptr<StackOp>;
+using IoOp_t = std::shared_ptr<IoOp>;
+using ControlFlow_t = std::shared_ptr<ControlFlow>;
+using IfElse_t = std::shared_ptr<IfElse>;
+using While_t = std::shared_ptr<While>;
+using VariableOp_t = std::shared_ptr<VariableOp>;
+using Comment_t = std::shared_ptr<Comment>;
+
 struct ASTNode {
     virtual ~ASTNode() = default;
-    virtual void accept(ASTVisitor& visitor) = 0;
+    virtual void accept(ASTVisitor& visitor) = 0; // cannot be const unfortunately
 };
 
 // --- Statement Nodes ---
@@ -24,42 +44,42 @@ struct Statement : ASTNode {
 
 // <program> ::= { <statement> }
 struct Program : ASTNode {
-    std::vector<Statement*> statements;
+    std::vector<Statement_t> statements;
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <literal> ::= <base 12 number> { "end" }
 struct Literal : Statement {
     Token token;
-    Literal(Token token) : token(token) {}
+    explicit Literal(Token token) : token(token) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <arithmetic-op> ::= "+" | "-" | "*" | "/" | "%"
 struct ArithmeticOp : Statement {
     Token op;
-    ArithmeticOp(Token op) : op(op) {}
+    explicit ArithmeticOp(Token op) : op(op) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <logical-op> ::= "=" | "<" | ">" | "&" | "|" | "~"
 struct LogicalOp : Statement {
     Token op;
-    LogicalOp(Token t) : op(t) {}
+    explicit LogicalOp(Token t) : op(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <stack-op> ::= "pop" | "dup" | "dup." | "swap" | "size"
 struct StackOp : Statement {
     Token op;
-    StackOp(Token t) : op(t) {}
+    explicit StackOp(Token t) : op(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <io-op> ::= "input" | "print" | "print-" | "debug"
 struct IoOp : Statement {
     Token op;
-    IoOp(Token t) : op(t) {}
+    explicit IoOp(Token t) : op(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
@@ -71,37 +91,37 @@ struct ControlFlow : Statement {
 
 // <block> ::= { <statement> }
 struct Block : Statement {
-    std::vector<Statement*> statements;
+    std::vector<Statement_t> statements;
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <if-else> ::= "if" <block> [ "else" <block> ] "end"
 struct IfElse : ControlFlow {
-    Block* then_branch;
-    Block* else_branch;
-    IfElse(Block* then_branch, Block* else_branch)
+    Block_t then_branch;
+    Block_t else_branch;
+    IfElse(Block_t then_branch, Block_t else_branch)
         : then_branch(then_branch), else_branch(else_branch) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <while> ::= "while" <block> "end"
 struct While : ControlFlow {
-    Block* body;
-    While(Block* body) : body(body) {}
+    Block_t body;
+    explicit While(Block_t body) : body(body) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <identifier> ::= <pitch> | <chord> { <pitch> | <chord> }
 struct Identifier : Statement {
     Token token;  // Contains the identifier name
-    Identifier(Token t) : token(t) {}
+    explicit Identifier(Token t) : token(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <identifier-call> ::= "f" <identifier> "end"
 struct IdentifierCall : Statement {
-    Identifier* identifier;
-    IdentifierCall(Identifier* id) : identifier(id) {}
+    Identifier_t identifier;
+    explicit IdentifierCall(Identifier_t id) : identifier(id) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
@@ -111,28 +131,28 @@ struct IdentifierCall : Statement {
 //                  | "^"       (* Free: free memory at the address on top of the stack *)
 struct VariableOp : Statement {
     Token op;
-    VariableOp(Token t) : op(t) {}
+    explicit VariableOp(Token t) : op(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <variable-op> ::= "var" <identifier>
 struct VariableDeclaration : Statement {
-    Identifier identifier;
-    VariableDeclaration(Token identifier) : identifier(identifier) {}
+    Identifier_t identifier;
+    explicit VariableDeclaration(Identifier_t identifier) : identifier(identifier) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <definition> ::= "def" <identifier> <block> "end"
 struct Definition : Statement {
-    Identifier* identifier;
-    Block* body;
-    Definition(Identifier* id, Block* body) : identifier(id), body(body) {}
+    Identifier_t identifier;
+    Block_t body;
+    explicit Definition(Identifier_t id, Block_t body) : identifier(id), body(body) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <comment> ::= "#" { <note> } "#"
 struct Comment : Statement {
     Token token;
-    Comment(Token t) : token(t) {}
+    explicit Comment(Token t) : token(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };

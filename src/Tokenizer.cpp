@@ -1,5 +1,4 @@
 #include "Tokenizer.h"
-#include "MidiReader.h"
 
 #include <cmath>
 #include <iostream>
@@ -7,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "MidiReader.h"
 
 const std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(5)", TokenType::DEF},
@@ -42,12 +42,11 @@ const std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(11)", TokenType::FREE},
 };
 
-Tokenizer::Tokenizer(std::string file)
-    : file(file), midi(mr.read(file)), groupIt(midi.begin()->group_begin()) {
+Tokenizer::Tokenizer(Midi& m) : midi(m), groupIt(midi.begin()->group_begin()) {
     currentToken = chordToToken();
 }
 
-Tokenizer::TokenizerIterator Tokenizer::TokenizerIterator::operator++() {
+Tokenizer::TokenizerIterator& Tokenizer::TokenizerIterator::operator++() {
     tokenizer->currentToken = tokenizer->chordToToken();
     if (!(tokenizer->groupIt != tokenizer->midi.begin()->group_end())) {
         what++;
@@ -127,9 +126,9 @@ Token Tokenizer::chordToLiteral() {
 }
 
 int Tokenizer::base12toDecimal(std::vector<std::string> base12) {
-    static const std::unordered_map<std::string, int> base12Map = {{"C", 0},  {"C#", 1}, {"D", 2},   {"D#", 3},
-                                                      {"E", 4},  {"F", 5},  {"F#", 6},  {"G", 7},
-                                                      {"G#", 8}, {"A", 9},  {"A#", 10}, {"B", 11}};
+    static const std::unordered_map<std::string, int> base12Map = {
+        {"C", 0},  {"C#", 1}, {"D", 2},  {"D#", 3}, {"E", 4},   {"F", 5},
+        {"F#", 6}, {"G", 7},  {"G#", 8}, {"A", 9},  {"A#", 10}, {"B", 11}};
     int decimal = 0;
     for (size_t i = 0; i < base12.size(); i++) {
         decimal += base12Map.at(base12[i]) * std::pow(12, base12.size() - 1 - i);
@@ -138,7 +137,8 @@ int Tokenizer::base12toDecimal(std::vector<std::string> base12) {
 }
 
 std::string Tokenizer::pitchToNoteName(int pitch) {
-    static const std::string noteNames[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    static const std::string noteNames[12] = {"C",  "C#", "D",  "D#", "E",  "F",
+                                              "F#", "G",  "G#", "A",  "A#", "B"};
     int index = pitch % 12;
     return noteNames[index];
 }

@@ -10,6 +10,10 @@ struct MidiNote {
     int end_time;
     int pitch;
     int velocity;
+
+    MidiNote() : start_time(-1), end_time(-1), pitch(-1), velocity(-1) {}
+    MidiNote(int start_time, int end_time, int pitch, int velocity)
+        : start_time(start_time), end_time(end_time), pitch(pitch), velocity(velocity) {}
 };
 
 class MidiTrack {
@@ -58,10 +62,7 @@ class MidiTrack {
 
         GroupIterator(TrackType& track, iterator start);
 
-        // Copy constructor
         GroupIterator(const GroupIterator& other);
-
-        // Copy assignment operator
         GroupIterator& operator=(const GroupIterator& other);
 
         value_type operator*() const { return lastChord; }
@@ -93,6 +94,7 @@ class Midi {
 
  public:
     Midi() : division(-30), format(1) {}
+
     void addTrack(const MidiTrack& track) { tracks.push_back(track); }
     void setDivision(int new_division) { division = new_division; }
     int getDivision() const { return division; }
@@ -119,4 +121,3 @@ class MidiReader {
     static MidiTrack parseTrack(const std::vector<char>& trackData);
     static MidiNote parseMidiEvent(const std::vector<char>& trackData, size_t& pos);
 };
-

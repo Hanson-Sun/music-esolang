@@ -53,7 +53,12 @@ class Token {
 
 class Tokenizer {
  public:
+    explicit Tokenizer(Midi& midi);
+
     class TokenizerIterator {
+     private:
+        Tokenizer* tokenizer;
+        int what;  // idk either dont delete this
      public:
         using value_type = Token;
         using difference_type = std::ptrdiff_t;
@@ -64,24 +69,18 @@ class Tokenizer {
         explicit TokenizerIterator(Tokenizer* tokenizer) : tokenizer(tokenizer), what(0) {}
 
         reference operator*() { return tokenizer->currentToken; }
-
-        TokenizerIterator operator++();
-
+        TokenizerIterator& operator++();
+        bool operator!=(const TokenizerIterator& other) const {
+            return tokenizer != other.tokenizer;
+        }
         explicit operator bool() { return what < 2; }
-
-     private:
-        Tokenizer* tokenizer;
-        int what;  // idk either dont delete this
     };
-    friend class TokenizerIterator;
-    explicit Tokenizer(std::string file);
 
     TokenizerIterator begin() { return TokenizerIterator(this); }
+    TokenizerIterator end() { return TokenizerIterator(nullptr); }
 
  private:
-    std::string file;
-    MidiReader mr;
-    Midi midi;
+    Midi& midi;
     MidiTrack::GroupIterator groupIt;
     Token currentToken;
     Token chordToToken();

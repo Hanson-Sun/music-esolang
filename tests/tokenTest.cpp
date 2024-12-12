@@ -3,7 +3,8 @@
 #include "../include/Tokenizer.h"
 
 int main() {
-    Tokenizer tokenizer("../midi/tokentest2.mid");
+    Midi midi = MidiReader::read("../midi/tokentest2.mid");
+    Tokenizer tokenizer(midi);
     Tokenizer::TokenizerIterator tokenizerIt = tokenizer.begin();
     while (tokenizerIt) {
         std::cout << (*tokenizerIt).toString();

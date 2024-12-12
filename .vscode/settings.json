@@ -86,6 +86,8 @@
         "__nullptr": "cpp",
         "__string": "cpp",
         "chrono": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     }
 }
