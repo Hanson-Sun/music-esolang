@@ -29,8 +29,8 @@ class Interpreter : public ASTVisitor {
     void visit(Comment& node) override;
 
  private:
-    std::stack<int> stack_;
-    std::vector<std::unordered_map<std::string, int>> scopes_;         
+    std::stack<int> stack;
+    std::vector<std::unordered_map<std::string, int>> scopes;         
     std::unordered_map<std::string, Definition*> functionDefinitions; 
 
     void push(int value);
