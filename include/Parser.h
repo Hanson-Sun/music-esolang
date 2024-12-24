@@ -29,12 +29,11 @@ class Parser {
 
  private:
     Token consumeToken();
-    void expectToken(TokenType expectedType, const std::string& errorMessage);
+    void expectToken(TokenType receivedType, const std::string& errorMessage);
 
     Program_t program();
     Statement_t statement();
     Literal_t literal();
-    Identifier_t identifier();
     IdentifierCall_t identifierCall();
     ArithmeticOp_t arithmeticOp();
     LogicalOp_t logicalOp();
@@ -45,6 +44,7 @@ class Parser {
     While_t whileStatement();
     Block_t block();
     VariableOp_t variableOp();
+    VariableDeclaration_t variableDeclaration();
     Definition_t definition();
     Comment_t comment();
 

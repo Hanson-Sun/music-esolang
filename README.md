@@ -141,6 +141,7 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
                    | <io-op>
                    | <control-flow>
                    | <variable-op>
+                   | <variable-dec>
                    | <definition>
                    | <comment>
                    | <identifier-call>
@@ -164,11 +165,11 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
 <while>          ::= "while" <block> "end"
 <block>          ::= { <statement> }
 
-<variable-op>    ::= "var" <identifier> "end"
-                   | "!"       (* Store: top of stack is value, second is address *)
+<variable-op>    ::= "!"       (* Store: top of stack is value, second is address *)
                    | "@"       (* Load: push value at address to the stack *)
                    | "^"       (* Free: free memory at the address on top of the stack *)
 
+<variable-dec> ::= "var" <identifier>
 
 <definition>     ::= "def" <identifier> "end" <block> "end"
 

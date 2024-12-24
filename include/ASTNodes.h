@@ -7,7 +7,6 @@
 
 using Statement_t = std::shared_ptr<Statement>;
 using Block_t = std::shared_ptr<Block>;
-using Identifier_t = std::shared_ptr<Identifier>;
 using Program_t = std::shared_ptr<Program>;
 using Definition_t = std::shared_ptr<Definition>;
 using IdentifierCall_t = std::shared_ptr<IdentifierCall>;
@@ -20,6 +19,7 @@ using ControlFlow_t = std::shared_ptr<ControlFlow>;
 using IfElse_t = std::shared_ptr<IfElse>;
 using While_t = std::shared_ptr<While>;
 using VariableOp_t = std::shared_ptr<VariableOp>;
+using VariableDeclaration_t = std::shared_ptr<VariableDeclaration>;
 using Comment_t = std::shared_ptr<Comment>;
 
 struct ASTNode {
@@ -58,6 +58,8 @@ struct Literal : Statement {
 // <arithmetic-op> ::= "+" | "-" | "*" | "/" | "%"
 struct ArithmeticOp : Statement {
     Token op;
+    Statement_t left;
+    Statement_t right;
     explicit ArithmeticOp(Token op) : op(op) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
@@ -65,6 +67,7 @@ struct ArithmeticOp : Statement {
 // <logical-op> ::= "=" | "<" | ">" | "&" | "|" | "~"
 struct LogicalOp : Statement {
     Token op;
+    Statement_t child;
     explicit LogicalOp(Token t) : op(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
@@ -111,22 +114,14 @@ struct While : ControlFlow {
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
-// <identifier> ::= <pitch> | <chord> { <pitch> | <chord> }
-struct Identifier : Statement {
-    Token token;  // Contains the identifier name
-    explicit Identifier(Token t) : token(t) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
-};
-
 // <identifier-call> ::= "f" <identifier> "end"
 struct IdentifierCall : Statement {
-    Identifier_t identifier;
-    explicit IdentifierCall(Identifier_t id) : identifier(id) {}
+    Literal_t identifier;
+    explicit IdentifierCall(Literal_t id) : identifier(id) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
-// <variable-op> ::= "var" <identifier>
-//                  | "!"       (* Store: top of stack is value, second is address *)
+// <variable-op> ::= "!"       (* Store: top of stack is value, second is address *)
 //                  | "@"       (* Load: push value at address to the stack *)
 //                  | "^"       (* Free: free memory at the address on top of the stack *)
 struct VariableOp : Statement {
@@ -135,18 +130,18 @@ struct VariableOp : Statement {
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
-// <variable-op> ::= "var" <identifier>
+// <variable-dec> ::= "var" <identifier>
 struct VariableDeclaration : Statement {
-    Identifier_t identifier;
-    explicit VariableDeclaration(Identifier_t identifier) : identifier(identifier) {}
+    Literal_t identifier;
+    explicit VariableDeclaration(Literal_t identifier) : identifier(identifier) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
 // <definition> ::= "def" <identifier> <block> "end"
 struct Definition : Statement {
-    Identifier_t identifier;
+    Literal_t identifier;
     Block_t body;
-    explicit Definition(Identifier_t id, Block_t body) : identifier(id), body(body) {}
+    explicit Definition(Literal_t id, Block_t body) : identifier(id), body(body) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
 
