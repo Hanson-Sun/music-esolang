@@ -147,6 +147,10 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
 
 <literal>        ::= <base 12 number> { "end" }
 
+<identifier>     ::= <literal>
+
+<identifer-call> ::= "f" <literal> "end"      
+
 <arithmetic-op>  ::= "+" | "-" | "*" | "/" | "%"
 
 <logical-op>     ::= "=" | "<" | ">" | "&" | "|" | "~"
@@ -160,14 +164,11 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
 <while>          ::= "while" <block> "end"
 <block>          ::= { <statement> }
 
-<variable-op>    ::= "var" <identifier>
+<variable-op>    ::= "var" <identifier> "end"
                    | "!"       (* Store: top of stack is value, second is address *)
                    | "@"       (* Load: push value at address to the stack *)
                    | "^"       (* Free: free memory at the address on top of the stack *)
 
-<identifier>     ::= <pitch> | <chord> { <pitch> | <chord> }
-
-<identifer-call> ::= "f" <identifier> "end"      
 
 <definition>     ::= "def" <identifier> "end" <block> "end"
 
