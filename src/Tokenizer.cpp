@@ -122,10 +122,11 @@ Token Tokenizer::chordToLiteral() {
         yeah.push_back(pitchToNoteName((noteIt)->pitch));
         ++groupIt;
     }
-    return Token(TokenType::LITERAL, std::to_string(base12toDecimal(yeah)));
+    int64_t value = base12toDecimal(yeah);
+    return Token(TokenType::LITERAL, "lit", value);
 }
 
-int Tokenizer::base12toDecimal(std::vector<std::string> base12) {
+int64_t Tokenizer::base12toDecimal(std::vector<std::string> base12) {
     static const std::unordered_map<std::string, int> base12Map = {
         {"C", 0},  {"C#", 1}, {"D", 2},  {"D#", 3}, {"E", 4},   {"F", 5},
         {"F#", 6}, {"G", 7},  {"G#", 8}, {"A", 9},  {"A#", 10}, {"B", 11}};

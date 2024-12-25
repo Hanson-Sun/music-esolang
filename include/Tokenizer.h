@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <variant>
 
 #include "MidiReader.h"
 
@@ -46,9 +47,10 @@ class Token {
  public:
     TokenType type;
     std::string chordLexeme;
-    Token() {}
-    Token(TokenType type, std::string chordLexeme) : type(type), chordLexeme(chordLexeme) {}
-    std::string toString() { return chordLexeme + " "; }
+    int64_t value;
+    Token() : type(TokenType::END), chordLexeme(""), value(0) {}
+    Token(TokenType type, const std::string& chordLexeme, int value = 0) : type(type), chordLexeme(chordLexeme), value(value) {}
+    std::string toString() { return chordLexeme + "[" + std::to_string(value) + "]"; }
 };
 
 class Tokenizer {
@@ -89,6 +91,6 @@ class Tokenizer {
     Token chordToComment();
     std::string formatCurrentChord();
     std::string pitchToNoteName(int pitch);
-    int base12toDecimal(std::vector<std::string> base12);
+    int64_t base12toDecimal(std::vector<std::string> base12);
     TokenType peek();
 };

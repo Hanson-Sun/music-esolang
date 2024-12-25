@@ -7,7 +7,7 @@ int main() {
     Tokenizer tokenizer(midi);
     Tokenizer::TokenizerIterator tokenizerIt = tokenizer.begin();
     while (tokenizerIt) {
-        std::cout << (*tokenizerIt).toString();
+        std::cout << (*tokenizerIt).toString() << " ";
         ++tokenizerIt;
     }
     std::cout << std::endl;

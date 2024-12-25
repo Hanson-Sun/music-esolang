@@ -1,9 +1,26 @@
 #pragma once
+#include <memory>
+#include <vector>
+
 #include "ASTVisitor.h"
 #include "Tokenizer.h"
 
-#include <memory>
-#include <vector>
+struct Statement;
+struct Block;
+struct Program;
+struct Definition;
+struct IdentifierCall;
+struct Literal;
+struct ArithmeticOp;
+struct LogicalOp;
+struct StackOp;
+struct IoOp;
+struct ControlFlow;
+struct IfElse;
+struct While;
+struct VariableOp;
+struct VariableDeclaration;
+struct Comment;
 
 using Statement_t = std::shared_ptr<Statement>;
 using Block_t = std::shared_ptr<Block>;
@@ -22,9 +39,11 @@ using VariableOp_t = std::shared_ptr<VariableOp>;
 using VariableDeclaration_t = std::shared_ptr<VariableDeclaration>;
 using Comment_t = std::shared_ptr<Comment>;
 
+// TODO: accept method should return error value instead of throwing an exception
+
 struct ASTNode {
     virtual ~ASTNode() = default;
-    virtual void accept(ASTVisitor& visitor) = 0; // cannot be const unfortunately
+    virtual void accept(ASTVisitor& visitor) = 0;  // cannot be const unfortunately
 };
 
 // --- Statement Nodes ---
@@ -38,9 +57,7 @@ struct ASTNode {
 //               | <definition>
 //               | <comment>
 //               | <identifier-call>
-struct Statement : ASTNode {
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
-};
+struct Statement : ASTNode {};
 
 // <program> ::= { <statement> }
 struct Program : ASTNode {
@@ -87,10 +104,7 @@ struct IoOp : Statement {
 };
 
 // <control-flow> ::= <if-else> | <while>
-struct ControlFlow : Statement {
-    ControlFlow() {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
-};
+struct ControlFlow : Statement {};
 
 // <block> ::= { <statement> }
 struct Block : Statement {
@@ -133,6 +147,7 @@ struct VariableOp : Statement {
 // <variable-dec> ::= "var" <identifier>
 struct VariableDeclaration : Statement {
     Literal_t identifier;
+    Literal_t value;
     explicit VariableDeclaration(Literal_t identifier) : identifier(identifier) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
@@ -149,5 +164,5 @@ struct Definition : Statement {
 struct Comment : Statement {
     Token token;
     explicit Comment(Token t) : token(t) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    void accept(ASTVisitor& visitor) override { } 
 };
