@@ -38,22 +38,25 @@ class ASTVisitor {
 };
 
 class ASTPrinter : ASTVisitor {
-    ASTPrinter() = default;
-    void visit(const Statement& node) override;
-    void visit(const Program& node) override;
-    void visit(const Literal& node) override;
-    void visit(const ArithmeticOp& node) override;
-    void visit(const LogicalOp& node) override;
-    void visit(const StackOp& node) override;
-    void visit(const IoOp& node) override;
-    void visit(const ControlFlow& node) override;
-    void visit(const Block& node) override;
-    void visit(const IfElse& node) override;
-    void visit(const While& node) override;
-    void visit(const Literal& node) override;
-    void visit(const IdentifierCall& node) override;
-    void visit(const VariableOp& node) override;
-    void visit(const VariableDeclaration& node) override;
-    void visit(const Definition& node) override;
-    void visit(const Comment& node) override;
+    public:
+        ASTPrinter() = default;
+        int depth = 1;
+        void printDepth() {
+            for (int i = 0; i < depth; i++) {
+                std::cout << "| ";
+            }
+        }
+        _<> visit(const Program& node) override;
+        _<> visit(const Literal& node) override;
+        _<> visit(const ArithmeticOp& node) override;
+        _<> visit(const LogicalOp& node) override;
+        _<> visit(const StackOp& node) override;
+        _<> visit(const IoOp& node) override;
+        _<> visit(const Block& node) override;
+        _<> visit(const IfElse& node) override;
+        _<> visit(const While& node) override;
+        _<> visit(const IdentifierCall& node) override;
+        _<> visit(const VariableOp& node) override;
+        _<> visit(const VariableDeclaration& node) override;
+        _<> visit(const Definition& node) override;
 };
