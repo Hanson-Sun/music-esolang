@@ -50,7 +50,7 @@ class ASTPrinter : ASTVisitor {
     void visit(const Block& node) override;
     void visit(const IfElse& node) override;
     void visit(const While& node) override;
-    void visit(const Identifier& node) override;
+    void visit(const Literal& node) override;
     void visit(const IdentifierCall& node) override;
     void visit(const VariableOp& node) override;
     void visit(const VariableDeclaration& node) override;

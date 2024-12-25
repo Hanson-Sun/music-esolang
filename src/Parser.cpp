@@ -12,13 +12,11 @@ void Parser::expectToken(TokenType receivedType, const std::string& errorMessage
 }
 
 Program_t Parser::parse() {
-    return program();
-}
-
-Program_t Parser::program() {
-    Program_t program = std::make_shared<Program>();
-    while (currentToken) {
-        program->statements.push_back(statement());
+    if (currentToken) {
+        Statement_t statement = this->statement();
+        if (statement) {
+            program->statements.push_back(statement);
+        }
     }
     return program;
 }
@@ -26,7 +24,7 @@ Program_t Parser::program() {
 Statement_t Parser::statement() {
     switch ((*currentToken).type) {
         case COMMENT:
-            return comment();
+            return nullptr;
         case LITERAL:
             return literal();
         case ADD:
@@ -54,7 +52,9 @@ Statement_t Parser::statement() {
         case DEBUG:
             return ioOp();
         case IF:
-            return controlFlow();
+            return ifElse();
+        case WHILE:
+            return whileStatement();
         case F:
             return identifierCall();
         case VAR:
@@ -87,12 +87,6 @@ ArithmeticOp_t Parser::arithmeticOp() {
     return temp;
 }
 
-Comment_t Parser::comment() {
-    Comment_t temp = std::make_shared<Comment>(*currentToken);
-    consumeToken();
-    return temp;
-}
-
 LogicalOp_t Parser::logicalOp() {
     LogicalOp_t temp = std::make_shared<LogicalOp>(*currentToken);
     consumeToken();
@@ -108,22 +102,6 @@ StackOp_t Parser::stackOp() {
 IoOp_t Parser::ioOp() {
     IoOp_t temp = std::make_shared<IoOp>(*currentToken);
     consumeToken();
-    return temp;
-}
-
-ControlFlow_t Parser::controlFlow() {
-    ControlFlow_t temp;
-    switch ((*currentToken).type) {
-        case IF:
-            temp = ifElse();
-            break;
-        case WHILE:
-            temp = whileStatement();
-            break;
-        default:
-            expectToken((*currentToken).type, "Expected a control flow statement");
-            return nullptr;
-    }
     return temp;
 }
 
