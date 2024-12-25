@@ -39,3 +39,24 @@ class ASTVisitor {
     virtual void visit(const Definition& node) = 0;
     virtual void visit(const Comment& node) = 0;
 };
+
+class ASTPrinter : ASTVisitor {
+    ASTPrinter() = default;
+    void visit(const Statement& node) override;
+    void visit(const Program& node) override;
+    void visit(const Literal& node) override;
+    void visit(const ArithmeticOp& node) override;
+    void visit(const LogicalOp& node) override;
+    void visit(const StackOp& node) override;
+    void visit(const IoOp& node) override;
+    void visit(const ControlFlow& node) override;
+    void visit(const Block& node) override;
+    void visit(const IfElse& node) override;
+    void visit(const While& node) override;
+    void visit(const Identifier& node) override;
+    void visit(const IdentifierCall& node) override;
+    void visit(const VariableOp& node) override;
+    void visit(const VariableDeclaration& node) override;
+    void visit(const Definition& node) override;
+    void visit(const Comment& node) override;
+};

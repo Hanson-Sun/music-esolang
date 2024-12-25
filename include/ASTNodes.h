@@ -58,8 +58,6 @@ struct Literal : Statement {
 // <arithmetic-op> ::= "+" | "-" | "*" | "/" | "%"
 struct ArithmeticOp : Statement {
     Token op;
-    Statement_t left;
-    Statement_t right;
     explicit ArithmeticOp(Token op) : op(op) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };
@@ -67,7 +65,6 @@ struct ArithmeticOp : Statement {
 // <logical-op> ::= "=" | "<" | ">" | "&" | "|" | "~"
 struct LogicalOp : Statement {
     Token op;
-    Statement_t child;
     explicit LogicalOp(Token t) : op(t) {}
     void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
 };

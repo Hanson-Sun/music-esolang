@@ -83,8 +83,6 @@ Literal_t Parser::literal() {
 ArithmeticOp_t Parser::arithmeticOp() {
     ArithmeticOp_t temp = std::make_shared<ArithmeticOp>(*currentToken);
     consumeToken();
-    temp->left = statement();
-    temp->right = statement();
     return temp;
 }
 
@@ -97,7 +95,6 @@ Comment_t Parser::comment() {
 LogicalOp_t Parser::logicalOp() {
     LogicalOp_t temp = std::make_shared<LogicalOp>(*currentToken);
     consumeToken();
-    temp->child = statement();
     return temp;
 }
 
