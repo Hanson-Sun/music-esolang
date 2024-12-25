@@ -1,43 +1,40 @@
 #pragma once
 
-struct Statement;
+#include "Errors.h"
+
+struct Block;
 struct Program;
+struct Definition;
+struct IdentifierCall;
 struct Literal;
 struct ArithmeticOp;
 struct LogicalOp;
 struct StackOp;
 struct IoOp;
-struct ControlFlow;
-struct Block;
 struct IfElse;
 struct While;
-struct Identifier;
-struct IdentifierCall;
 struct VariableOp;
 struct VariableDeclaration;
-struct Definition;
-struct Comment;
+
+
+// TODO: refactor these to return an error value instead of throwing an exception
 
 class ASTVisitor {
  public:
     virtual ~ASTVisitor() = default;
-    virtual void visit(const Statement& node) = 0;
-    virtual void visit(const Program& node) = 0;
-    virtual void visit(const Literal& node) = 0;
-    virtual void visit(const ArithmeticOp& node) = 0;
-    virtual void visit(const LogicalOp& node) = 0;
-    virtual void visit(const StackOp& node) = 0;
-    virtual void visit(const IoOp& node) = 0;
-    virtual void visit(const ControlFlow& node) = 0;
-    virtual void visit(const Block& node) = 0;
-    virtual void visit(const IfElse& node) = 0;
-    virtual void visit(const While& node) = 0;
-    virtual void visit(const Identifier& node) = 0;
-    virtual void visit(const IdentifierCall& node) = 0;
-    virtual void visit(const VariableOp& node) = 0;
-    virtual void visit(const VariableDeclaration& node) = 0;
-    virtual void visit(const Definition& node) = 0;
-    virtual void visit(const Comment& node) = 0;
+    virtual _<> visit(const Program& node) = 0;
+    virtual _<> visit(const Literal& node) = 0;
+    virtual _<> visit(const ArithmeticOp& node) = 0;
+    virtual _<> visit(const LogicalOp& node) = 0;
+    virtual _<> visit(const StackOp& node) = 0;
+    virtual _<> visit(const IoOp& node) = 0;
+    virtual _<> visit(const Block& node) = 0;
+    virtual _<> visit(const IfElse& node) = 0;
+    virtual _<> visit(const While& node) = 0;
+    virtual _<> visit(const IdentifierCall& node) = 0;
+    virtual _<> visit(const VariableOp& node) = 0;
+    virtual _<> visit(const VariableDeclaration& node) = 0;
+    virtual _<> visit(const Definition& node) = 0;
 };
 
 class ASTPrinter : ASTVisitor {

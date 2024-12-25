@@ -7,7 +7,8 @@ Token Parser::consumeToken() {
 }
 
 void Parser::expectToken(TokenType receivedType, const std::string& errorMessage) {
-    std::cout << errorMessage << "Received: " << receivedType << std::endl;
+    std::cerr << errorMessage << ". Received: " << receivedType << std::endl;
+    // TODO: maybe want exceptions here?
 }
 
 Program_t Parser::parse() {

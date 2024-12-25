@@ -1,42 +1,73 @@
 #pragma once
 
-#include <stack>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
+#include <queue>
 
-#include "ASTNodes.h"
 #include "ASTVisitor.h"
+#include "ASTNodes.h"
+#include "Errors.h"
 
 class Interpreter : public ASTVisitor {
  public:
-    void interpret(Program_t program);
+    Interpreter() {
+      // main scope
+      enterScope();
+    }
 
-    void visit(const Program& node) override;
-    void visit(const Literal& node) override;
-    void visit(const ArithmeticOp& node) override;
-    void visit(const LogicalOp& node) override;
-    void visit(const StackOp& node) override;
-    void visit(const IoOp& node) override;
-    void visit(const ControlFlow& node) override;
-    void visit(const IfElse& node) override;
-    void visit(const While& node) override;
-    void visit(const Block& node) override;
-    void visit(const VariableOp& node) override;
-    void visit(const Identifier& node) override;
-    void visit(const IdentifierCall& node) override;
-    void visit(const Definition& node) override;
-    void visit(const Comment& node) override;
+    _<> interpret(Statement_t statement);
+   //  _<> interpret(Program_t program);
+
+    // no visit for statement since statement is effectively "virtual"
+    // same idea for controlflow
+    _<> visit(const Program& node) override;
+    _<> visit(const Literal& node) override;
+    _<> visit(const ArithmeticOp& node) override;
+    _<> visit(const LogicalOp& node) override;
+    _<> visit(const StackOp& node) override;
+    _<> visit(const IoOp& node) override;
+    _<> visit(const IfElse& node) override;
+    _<> visit(const While& node) override;
+    _<> visit(const Block& node) override;
+    _<> visit(const VariableOp& node) override;
+    _<> visit(const VariableDeclaration& node) override;
+    _<> visit(const Definition& node) override;
+    _<> visit(const IdentifierCall& node) override;
 
  private:
-    std::stack<int> stack;
-    std::vector<std::unordered_map<std::string, int>> scopes;
-    std::unordered_map<std::string, Definition*> functionDefinitions;
+    struct Scope {
+        std::unordered_map<int64_t, Block_t> func_defs;
+        std::unordered_map<int64_t, int64_t> var_defs;
+    };
 
-    void push(int value);
-    int pop();
-    void enterScope();
-    void exitScope();
+    std::vector<int64_t> stack;
+    // okay so a stack of scopes
+
+    std::vector<Scope> scopes;  
+
+    // arena for var op creation
+    std::vector<int64_t> arena;
+    std::queue<int64_t> arena_free; // queue of available addresses
+    std::vector<bool> arena_used;  // true if address is used
+
+    _<int64_t> a_malloc();
+    _<>        a_free(int64_t address);
+    _<int64_t> a_at(int64_t address);  // get value at address
+    _<>        a_set(int64_t address, int64_t value);
+
+    _<>        push(int64_t value);
+    _<int64_t> pop();
+    _<int64_t> top();
+
+    _<> enterScope();
+    _<> exitScope();
+
+    _<> getVar(int64_t varName);
+    _<> setVar(int64_t varName, int64_t value);
+
+    _<> getFunc(int64_t funcName);
+    _<> setFunc(int64_t funcName, const Block_t def);
 
     // probably need a bunch of other helper functions
     // also figure out how to do scoping
