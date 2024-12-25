@@ -37,7 +37,7 @@ class ASTVisitor {
     virtual _<> visit(const Definition& node) = 0;
 };
 
-class ASTPrinter : ASTVisitor {
+class ASTPrinter : public ASTVisitor {
     public:
         ASTPrinter() = default;
         int depth = 1;

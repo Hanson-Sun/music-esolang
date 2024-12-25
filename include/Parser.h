@@ -9,6 +9,7 @@ class Parser {
  public:
     explicit Parser(Tokenizer& tokenizer) : tokenizer(tokenizer), currentToken(tokenizer.begin()), program(std::make_shared<Program>()) {}
     Program_t parse();
+    Program_t program;
 
     // for the interpreter
     class ParserIterator {
@@ -20,12 +21,16 @@ class Parser {
         using iterator_category = std::forward_iterator_tag;
 
         explicit ParserIterator(Parser* parser) : parser(parser) {}
-        reference operator*() {parser->program->statements[parser->program->statements.size()-1];};
-        ParserIterator& operator++() {parser->parse();};
+        reference operator*() {return parser->program->statements[parser->program->statements.size()-1];};
+        ParserIterator& operator++() {parser->parse(); return *this;};
+        explicit operator bool() {return static_cast<bool>(parser->currentToken);};
 
      private:
         Parser* parser;
     };
+
+   ParserIterator begin() { return ParserIterator(this); }
+   ParserIterator end() { return ParserIterator(nullptr); }
 
  private:
     Token consumeToken();
@@ -33,6 +38,7 @@ class Parser {
 
     Statement_t statement();
     Literal_t literal();
+    Literal_t identifier();
     IdentifierCall_t identifierCall();
     ArithmeticOp_t arithmeticOp();
     LogicalOp_t logicalOp();
@@ -47,5 +53,4 @@ class Parser {
  private:
     Tokenizer& tokenizer;
     Tokenizer::TokenizerIterator currentToken;
-    Program_t program;
 };

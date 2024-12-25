@@ -24,6 +24,7 @@ Program_t Parser::parse() {
 Statement_t Parser::statement() {
     switch ((*currentToken).type) {
         case COMMENT:
+            consumeToken();
             return nullptr;
         case LITERAL:
             return literal();
@@ -78,6 +79,12 @@ Literal_t Parser::literal() {
     if ((*currentToken).type == END) {
         consumeToken();
     }
+    return temp;
+}
+
+Literal_t Parser::identifier() {
+    Literal_t temp = std::make_shared<Literal>(*currentToken);
+    consumeToken();
     return temp;
 }
 
@@ -147,7 +154,7 @@ While_t Parser::whileStatement() {
 
 IdentifierCall_t Parser::identifierCall() {
     consumeToken();  // consume "f"
-    Literal_t id = literal();
+    Literal_t id = identifier();
     if ((*currentToken).type == END) {
         consumeToken();  // consume "end"
     } else {
@@ -160,7 +167,7 @@ IdentifierCall_t Parser::identifierCall() {
 
 VariableDeclaration_t Parser::variableDeclaration() {
     consumeToken();  // consume "var"
-    Literal_t id = literal();
+    Literal_t id = identifier();
     if ((*currentToken).type == END) {
         consumeToken();  // consume "end"
     } else {
@@ -179,7 +186,7 @@ VariableOp_t Parser::variableOp() {
 
 Definition_t Parser::definition() {
     consumeToken();  // consume "def"
-    Literal_t id = literal();
+    Literal_t id = identifier();
     Block_t body = std::make_shared<Block>();
     while ((*currentToken).type != END && currentToken) {
         body->statements.push_back(statement());

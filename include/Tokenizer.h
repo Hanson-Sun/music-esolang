@@ -51,6 +51,8 @@ class Token {
     Token() : type(TokenType::END), chordLexeme(""), value(0) {}
     Token(TokenType type, const std::string& chordLexeme, int value = 0) : type(type), chordLexeme(chordLexeme), value(value) {}
     std::string toString() { return chordLexeme + "[" + std::to_string(value) + "]"; }
+    std::string toString() const { return chordLexeme + "[" + std::to_string(value) + "]"; }
+
 };
 
 class Tokenizer {
