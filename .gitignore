@@ -3,3 +3,5 @@
 build/
 tests/tokenTest
 tests/midiTest
+tests/parserTest
+tests/interpreterTest
