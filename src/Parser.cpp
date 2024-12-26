@@ -6,26 +6,19 @@ Token Parser::consumeToken() {
     return *currentToken;
 }
 
-void Parser::expectToken(TokenType receivedType, const std::string& errorMessage) {
-    std::cerr << errorMessage << ". Received: " << receivedType << std::endl;
-    // TODO: maybe want exceptions here?
-}
-
-Program_t Parser::parse() {
+_<Statement_t> Parser::parse() {
     if (currentToken) {
-        Statement_t statement = this->statement();
-        if (statement) {
-            program->statements.push_back(statement);
-        }
+        auto statement = this->statement();
+        if (_check(statement)) 
+            return ErrorHandler::addContext(statement, "Failed to parse statement: " + (*currentToken).toString());
+        program->statements.push_back(std::get<Statement_t>(statement));
+        return statement;
     }
-    return program;
+    return ErrorHandler::createError(ErrorCode::INVALID_STATEMENT, "Parsing token error");
 }
 
-Statement_t Parser::statement() {
+_<Statement_t> Parser::statement() {
     switch ((*currentToken).type) {
-        case COMMENT:
-            consumeToken();
-            return nullptr;
         case LITERAL:
             return literal();
         case ADD:
@@ -67,12 +60,11 @@ Statement_t Parser::statement() {
         case DEF:
             return definition();
         default:
-            expectToken((*currentToken).type, "Expected a statement");
-            return nullptr;
+            return ErrorHandler::createError(ErrorCode::INVALID_TOKEN, "Invalid token type: " + (*currentToken).toString());
     }
 }
 
-Literal_t Parser::literal() {
+_<Statement_t> Parser::literal() {
     Literal_t temp = std::make_shared<Literal>(*currentToken);
     consumeToken();
     // optional end token
@@ -82,123 +74,138 @@ Literal_t Parser::literal() {
     return temp;
 }
 
-Literal_t Parser::identifier() {
+_<Statement_t> Parser::identifier() {
     Literal_t temp = std::make_shared<Literal>(*currentToken);
     consumeToken();
     return temp;
 }
 
-ArithmeticOp_t Parser::arithmeticOp() {
+_<Statement_t> Parser::arithmeticOp() {
     ArithmeticOp_t temp = std::make_shared<ArithmeticOp>(*currentToken);
     consumeToken();
     return temp;
 }
 
-LogicalOp_t Parser::logicalOp() {
+_<Statement_t> Parser::logicalOp() {
     LogicalOp_t temp = std::make_shared<LogicalOp>(*currentToken);
     consumeToken();
     return temp;
 }
 
-StackOp_t Parser::stackOp() {
+_<Statement_t> Parser::stackOp() {
     StackOp_t temp = std::make_shared<StackOp>(*currentToken);
     consumeToken();
     return temp;
 }
 
-IoOp_t Parser::ioOp() {
+_<Statement_t> Parser::ioOp() {
     IoOp_t temp = std::make_shared<IoOp>(*currentToken);
     consumeToken();
     return temp;
 }
 
-IfElse_t Parser::ifElse() {
+_<Statement_t> Parser::ifElse() {
     consumeToken();  // consume "if"
     Block_t thenBranch = std::make_shared<Block>();
     while ((*currentToken).type != ELSE && (*currentToken).type != END && currentToken) {
-        thenBranch->statements.push_back(statement());
+        auto result = statement();
+        if (_check(result))
+            return ErrorHandler::addContext(result, "@ 'if' branch: " + (*currentToken).toString());
+        thenBranch->statements.push_back(std::get<Statement_t>(result));
     }
     Block_t elseBranch = nullptr;
     if ((*currentToken).type == ELSE) {
         consumeToken();  // consume "else"
         elseBranch = std::make_shared<Block>();
         while ((*currentToken).type != END && currentToken) {
-            elseBranch->statements.push_back(statement());
+            auto result = statement();
+            if (_check(result))
+                return ErrorHandler::addContext(result, "@ 'else' branch: " + (*currentToken).toString());
+            elseBranch->statements.push_back(std::get<Statement_t>(result));
         }
     }
     if ((*currentToken).type == END) {
         consumeToken();  // consume "end"
     } else {
-        //error stop building syntax tree
-        expectToken((*currentToken).type, "Expected 'end' after if-else statement");
-        return nullptr;
+        return ErrorHandler::createError(ErrorCode::MISSING_END_TOKEN, "Expected 'end' after if-else statement: " + (*currentToken).toString());
     }
     return std::make_shared<IfElse>(thenBranch, elseBranch);
 }
 
-While_t Parser::whileStatement() {
+_<Statement_t> Parser::whileStatement() {
     consumeToken();  // consume "while"
     Block_t body = std::make_shared<Block>();
     while ((*currentToken).type != END && currentToken) {
-        body->statements.push_back(statement());
+        auto result = statement();
+        if (_check(result))
+            return ErrorHandler::addContext(result, "@ 'while' body: " + (*currentToken).chordLexeme);
+        body->statements.push_back(std::get<Statement_t>(result));
     }
     if ((*currentToken).type == END) {
             consumeToken();  // consume "end"
     } else {    
         //error stop building syntax tree
-        expectToken((*currentToken).type, "Expected 'end' after while statement");
-        return nullptr;
+        return ErrorHandler::createError(ErrorCode::MISSING_END_TOKEN, "Expected 'end' after while statement: " + (*currentToken).toString());
     }
     return std::make_shared<While>(body);
 }
 
-IdentifierCall_t Parser::identifierCall() {
+_<Statement_t> Parser::identifierCall() {
     consumeToken();  // consume "f"
-    Literal_t id = identifier();
+    auto id = identifier();
+    if (_check(id))
+        return ErrorHandler::addContext(id, "@ Identifier call: " + (*currentToken).toString());
+
     if ((*currentToken).type == END) {
         consumeToken();  // consume "end"
     } else {
         //error stop building syntax tree
-        expectToken((*currentToken).type, "Expected 'end' after identifier call");
-        return nullptr;
+        return ErrorHandler::createError(ErrorCode::MISSING_END_TOKEN, "Expected 'end' after identifier call: " + (*currentToken).toString());
     }
-    return std::make_shared<IdentifierCall>(id);
+    return std::make_shared<IdentifierCall>(std::dynamic_pointer_cast<Literal>(std::get<Statement_t>(id)));
 }
 
-VariableDeclaration_t Parser::variableDeclaration() {
+_<Statement_t> Parser::variableDeclaration() {
     consumeToken();  // consume "var"
-    Literal_t id = identifier();
+    auto id = identifier();
+    if (_check(id))
+        return ErrorHandler::addContext(id, "@ Variable declaration: " + (*currentToken).toString());
+
     if ((*currentToken).type == END) {
         consumeToken();  // consume "end"
     } else {
         //error stop building syntax tree
-        expectToken((*currentToken).type, "Expected 'end' after variable declaration");
-        return nullptr;
+        return ErrorHandler::createError(ErrorCode::MISSING_END_TOKEN, "Expected 'end' after variable declaration: " + (*currentToken).toString());
     }
-    return std::make_shared<VariableDeclaration>(id);
+    return std::make_shared<VariableDeclaration>(std::dynamic_pointer_cast<Literal>(std::get<Statement_t>(id)));
 }
 
-VariableOp_t Parser::variableOp() {
+_<Statement_t> Parser::variableOp() {
     VariableOp_t temp = std::make_shared<VariableOp>(*currentToken);
     consumeToken();
     return temp;
 }
 
-Definition_t Parser::definition() {
+_<Statement_t> Parser::definition() {
     consumeToken();  // consume "def"
-    Literal_t id = identifier();
+    auto id = identifier();
+    if (_check(id))
+        return ErrorHandler::addContext(id, "@ Definition: " + (*currentToken).toString());
+
     Block_t body = std::make_shared<Block>();
     while ((*currentToken).type != END && currentToken) {
-        body->statements.push_back(statement());
+        auto result = statement();
+        if (_check(result))
+            return ErrorHandler::addContext(result, "@ Definition body: " + (*currentToken).toString());
+        body->statements.push_back(std::get<Statement_t>(result));
     }
     if ((*currentToken).type == END) {
         consumeToken();  // consume "end"
     } else {
         //error stop building syntax tree
-        expectToken((*currentToken).type, "Expected 'end' after definition");
-        return nullptr;
+        return ErrorHandler::createError(ErrorCode::MISSING_END_TOKEN, "Expected 'end' after definition: " + (*currentToken).toString());
     }
-    return std::make_shared<Definition>(id, body);
+    return std::make_shared<Definition>(std::dynamic_pointer_cast<Literal>(std::get<Statement_t>(id)), body);
 }
 
 

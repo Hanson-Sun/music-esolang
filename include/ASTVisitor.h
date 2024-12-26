@@ -15,6 +15,7 @@ struct IfElse;
 struct While;
 struct VariableOp;
 struct VariableDeclaration;
+struct NoOp;
 
 
 // TODO: refactor these to return an error value instead of throwing an exception
@@ -35,6 +36,7 @@ class ASTVisitor {
     virtual _<> visit(const VariableOp& node) = 0;
     virtual _<> visit(const VariableDeclaration& node) = 0;
     virtual _<> visit(const Definition& node) = 0;
+    virtual _<> visit(const NoOp& node) = 0;
 };
 
 class ASTPrinter : public ASTVisitor {
@@ -59,4 +61,5 @@ class ASTPrinter : public ASTVisitor {
         _<> visit(const VariableOp& node) override;
         _<> visit(const VariableDeclaration& node) override;
         _<> visit(const Definition& node) override;
+        _<> visit(const NoOp& node) override;
 };

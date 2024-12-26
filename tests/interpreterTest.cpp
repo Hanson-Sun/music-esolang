@@ -14,10 +14,10 @@ int main() {
     Statement_t literal2 = std::make_shared<Literal>(literalToken2);
 
     // Create an arithmetic operation statement (42 + 42)
-    Token addToken(TokenType::ADD, "+");
+    Token addToken(TokenType::ADD, "(8, 2)");
     Statement_t arithmeticOp = std::make_shared<ArithmeticOp>(addToken);
 
-    Token debugToken(TokenType::DEBUG, "debug");
+    Token debugToken(TokenType::DEBUG, "(5, 4, 7)");
     Statement_t debug = std::make_shared<IoOp>(debugToken);
 
     // Add the statements to the program
@@ -27,13 +27,12 @@ int main() {
     program->statements.push_back(arithmeticOp);
     program->statements.push_back(debug);
     program->statements.push_back(arithmeticOp);
-    program->statements.push_back(arithmeticOp);
 
     // Create an interpreter
     Interpreter interpreter;
 
     // Execute the program
-    auto result = interpreter.visit(*program);
+    auto result = interpreter.interpret(program);
 
     if (_check(result)) {
         ErrorHandler::printError(std::get<Error>(result));

@@ -33,20 +33,24 @@ void run(const std::string midiFilename) {
 
     Tokenizer tokenizer(midi);
     Parser parser(tokenizer);
-    Parser::ParserIterator parser_it = parser.begin();
+    Parser::ParserIterator it = parser.begin();
 
     Interpreter interpreter;
 
-    while (parser_it) {
-        if (auto result = interpreter.interpret(*parser_it); _check(result)) {
+    while (it) {
+        auto statement = *it;
+        if (_check(statement)) {
+            ErrorHandler::printError(std::get<Error>(statement));
+            break;
+        }
+        
+        if (auto result = interpreter.interpret(std::get<Statement_t>(statement)); _check(result)) {
             ErrorHandler::printError(std::get<Error>(result));
             break;
         }
-        ++parser_it;
-    }
 
-    // alternative
-    // interpreter.interpret(parser.parse());
+        ++it;
+    }
 }
 
 int main(int argc, char* argv[]) {

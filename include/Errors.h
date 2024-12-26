@@ -9,22 +9,22 @@ enum ErrorCode : int8_t{
     INVALID_TOKEN,
     STACK_UNDERFLOW,
     INVALID_ADDRESS,
-    VARIABLE_NOT_FOUND,
-    VARIABLE_ALREADY_DEFINED,
-    FUNCTION_NOT_FOUND,
-    FUNCTION_ALREADY_DEFINED,
+    IDENTIFIER_NOT_FOUND,
+    IDENTIFIER_ALREADY_DEFINED,
     MEMORY_ALLOCATION_FAILED,
+    INVALID_STATEMENT,
+    MISSING_END_TOKEN
 };
 
 const std::unordered_map<ErrorCode, std::string> ErrorMessages = {
     {ErrorCode::NONE, "No error"},
     {ErrorCode::STACK_UNDERFLOW, "Stack underflow"},
     {ErrorCode::INVALID_ADDRESS, "Invalid address"},
-    {ErrorCode::VARIABLE_NOT_FOUND, "Variable not found"},
-    {ErrorCode::VARIABLE_ALREADY_DEFINED, "Variable already defined"},
-    {ErrorCode::FUNCTION_NOT_FOUND, "Function not found"},
-    {ErrorCode::FUNCTION_ALREADY_DEFINED, "Function already defined"},
-    {ErrorCode::MEMORY_ALLOCATION_FAILED, "Memory allocation failed"}
+    {ErrorCode::IDENTIFIER_NOT_FOUND, "Identifier not found"},
+    {ErrorCode::IDENTIFIER_ALREADY_DEFINED, "Identifier already defined"},
+    {ErrorCode::MEMORY_ALLOCATION_FAILED, "Memory allocation failed"},
+    {ErrorCode::INVALID_STATEMENT, "Invalid statement"},
+    {ErrorCode::MISSING_END_TOKEN, "Missing end token"}
 };
 
 struct Error {
@@ -51,17 +51,16 @@ public:
     }
 
     static Error createError(ErrorCode code, const std::string& context = "") {
-        std::string message = ErrorMessages.at(code);
+        std::string message;
         if (!context.empty()) {
-            message += "\n[" + context + "]";
+            message += "\n  ~~~>[" + context + "]";
         }
         return Error(code, message);
     }
 
     template<typename T>
     static Error addContext(std::variant<T, Error> error, const std::string& context) {
-        std::cout << context << std::endl;
-        std::get<Error>(error).message += "\n[" + context + "]";
+        std::get<Error>(error).message += "\n  ~~~>[" + context + "]";
         return std::get<Error>(error);
     }
 };

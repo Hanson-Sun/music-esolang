@@ -50,8 +50,11 @@ class Token {
     int64_t value;
     Token() : type(TokenType::END), chordLexeme(""), value(0) {}
     Token(TokenType type, const std::string& chordLexeme, int value = 0) : type(type), chordLexeme(chordLexeme), value(value) {}
-    std::string toString() { return chordLexeme + "[" + std::to_string(value) + "]"; }
-    std::string toString() const { return chordLexeme + "[" + std::to_string(value) + "]"; }
+    std::string toString() const { 
+        if (type == TokenType::LITERAL)
+           return  "Literal(" + std::to_string(value) + ")"; 
+        return chordLexeme;
+    }
 
 };
 

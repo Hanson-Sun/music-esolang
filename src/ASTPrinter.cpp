@@ -1,5 +1,5 @@
-#include "../include/ASTVisitor.h"
-#include "../include/ASTNodes.h"
+#include "ASTVisitor.h"
+#include "ASTNodes.h"
 #include <iostream>
 #include <variant>
 
@@ -108,3 +108,6 @@ _<> ASTPrinter::visit(const Definition& node) {
     return std::monostate{};
 }
 
+_<> ASTPrinter::visit(const NoOp& node) {
+    return std::monostate();
+}

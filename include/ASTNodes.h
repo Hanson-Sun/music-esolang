@@ -43,7 +43,7 @@ using Comment_t = std::shared_ptr<Comment>;
 
 struct ASTNode {
     virtual ~ASTNode() = default;
-    virtual void accept(ASTVisitor& visitor) = 0;  // cannot be const unfortunately
+    virtual _<> accept(ASTVisitor& visitor) = 0;  // cannot be const unfortunately
 };
 
 // --- Statement Nodes ---
@@ -62,42 +62,42 @@ struct Statement : ASTNode {};
 // <program> ::= { <statement> }
 struct Program : ASTNode {
     std::vector<Statement_t> statements;
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <literal> ::= <base 12 number> { "end" }
 struct Literal : Statement {
     Token token;
     explicit Literal(Token token) : token(token) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <arithmetic-op> ::= "+" | "-" | "*" | "/" | "%"
 struct ArithmeticOp : Statement {
     Token op;
     explicit ArithmeticOp(Token op) : op(op) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <logical-op> ::= "=" | "<" | ">" | "&" | "|" | "~"
 struct LogicalOp : Statement {
     Token op;
     explicit LogicalOp(Token t) : op(t) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <stack-op> ::= "pop" | "dup" | "dup." | "swap" | "size"
 struct StackOp : Statement {
     Token op;
     explicit StackOp(Token t) : op(t) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <io-op> ::= "input" | "print" | "print-" | "debug"
 struct IoOp : Statement {
     Token op;
     explicit IoOp(Token t) : op(t) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <control-flow> ::= <if-else> | <while>
@@ -106,7 +106,7 @@ struct ControlFlow : Statement {};
 // <block> ::= { <statement> }
 struct Block : Statement {
     std::vector<Statement_t> statements;
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <if-else> ::= "if" <block> [ "else" <block> ] "end"
@@ -115,21 +115,21 @@ struct IfElse : ControlFlow {
     Block_t else_branch;
     IfElse(Block_t then_branch, Block_t else_branch)
         : then_branch(then_branch), else_branch(else_branch) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <while> ::= "while" <block> "end"
 struct While : ControlFlow {
     Block_t body;
     explicit While(Block_t body) : body(body) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <identifier-call> ::= "f" <identifier> "end"
 struct IdentifierCall : Statement {
     Literal_t identifier;
     explicit IdentifierCall(Literal_t id) : identifier(id) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <variable-op> ::= "!"       (* Store: top of stack is value, second is address *)
@@ -138,7 +138,7 @@ struct IdentifierCall : Statement {
 struct VariableOp : Statement {
     Token op;
     explicit VariableOp(Token t) : op(t) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <variable-dec> ::= "var" <identifier>
@@ -146,7 +146,7 @@ struct VariableDeclaration : Statement {
     Literal_t identifier;
     Literal_t value;
     explicit VariableDeclaration(Literal_t identifier) : identifier(identifier) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <definition> ::= "def" <identifier> <block> "end"
@@ -154,12 +154,17 @@ struct Definition : Statement {
     Literal_t identifier;
     Block_t body;
     explicit Definition(Literal_t id, Block_t body) : identifier(id), body(body) {}
-    void accept(ASTVisitor& visitor) override { visitor.visit(*this); }
+    _<> accept(ASTVisitor& visitor) override { return visitor.visit(*this); }
 };
 
 // <comment> ::= "#" { <note> } "#"
 struct Comment : Statement {
     Token token;
     explicit Comment(Token t) : token(t) {}
-    void accept(ASTVisitor& visitor) override { } 
+    _<> accept(ASTVisitor& visitor) override { return std::monostate();} 
+};
+
+struct NoOp : Statement {
+    NoOp() {}
+    _<> accept(ASTVisitor& visitor) override { return std::monostate();} 
 };

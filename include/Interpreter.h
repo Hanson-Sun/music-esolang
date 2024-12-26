@@ -17,10 +17,8 @@ class Interpreter : public ASTVisitor {
     }
 
     _<> interpret(Statement_t statement);
-   //  _<> interpret(Program_t program);
+    _<> interpret(Program_t program);
 
-    // no visit for statement since statement is effectively "virtual"
-    // same idea for controlflow
     _<> visit(const Program& node) override;
     _<> visit(const Literal& node) override;
     _<> visit(const ArithmeticOp& node) override;
@@ -34,6 +32,7 @@ class Interpreter : public ASTVisitor {
     _<> visit(const VariableDeclaration& node) override;
     _<> visit(const Definition& node) override;
     _<> visit(const IdentifierCall& node) override;
+    _<> visit(const NoOp& node) override;
 
  private:
     struct Scope {

@@ -59,10 +59,9 @@ Token Tokenizer::chordToToken() {
     switch (type) {
         case TokenType::DIGIT:
             return chordToLiteral();
-            break;
         case TokenType::COMMENT:
-            return chordToComment();
-            break;
+            chordToComment();
+            return chordToToken();
         default:
             return chordToKeyword();
     }
@@ -81,14 +80,12 @@ std::string Tokenizer::formatCurrentChord() {
             prev = note.pitch;
         }
     }
-    // std::cout << chordLexeme.substr(0, chordLexeme.size() - 2) + ")" << std::endl;
     return chordLexeme = chordLexeme.substr(0, chordLexeme.size() - 2) + ")";
 }
 
 TokenType Tokenizer::peek() {
     std::string chordLexeme = formatCurrentChord();
     if (chordLexeme == "()") {
-        // std::cout << "oh" << std::endl;
         return TokenType::DIGIT;
     } else if (CHORDTOKENMAP.find(chordLexeme) != CHORDTOKENMAP.end()) {
         return CHORDTOKENMAP.at(chordLexeme);

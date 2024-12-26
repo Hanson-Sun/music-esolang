@@ -7,12 +7,22 @@ int main() {
     Midi midi = MidiReader::read("../midi/parserTest1.mid");
     Tokenizer tokenizer(midi);
 
+    ASTPrinter printer;
+
     Parser parser(tokenizer);
     Parser::ParserIterator it = parser.begin();
     while(it) {
+        auto result = *it;
+        if (_check(result)) {
+            std::cout << "WTFFF" << std::endl;
+            break;
+        }
+
+        std::get<Statement_t>(result)->accept(printer);
         ++it;
     }
-    ASTPrinter printer;
+
+    std::cout << "--------------- FINAL PRINT ---------------" << std::endl;
     parser.program->accept(printer);
     return 0;
 }
