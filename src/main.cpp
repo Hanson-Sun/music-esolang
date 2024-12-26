@@ -20,6 +20,39 @@ void printHelp(const char* programName) {
 void repl() {
     // gonna need to use rtMidi
     std::cout << "Starting interactive REPL mode. Type 'exit' or ctrl-c to quit." << std::endl;
+
+    // this doesnt actually work
+    Interpreter interpreter;
+    while (true) {
+        std::string value;
+        std::cout << "NOT IMPLEMENTED" << std::endl;
+        std::cin >> value;
+
+        /**
+        somehow get a list of the notes (live midi notes), users will control when a group of notes is ready
+
+        MidiTrack track = MidiTrack(notes)
+        Tokenizer tokenizer = Tokenizer(track);
+        Parser(tokenizer);
+        Parser::ParserIterator it = parser.begin();
+
+        // somehow add smart detection for things like defs, control flow, and blocks, which will ask the user for more notes.
+        while (it) {
+            auto statement = *it;
+            if (_check(statement)) {
+                ErrorHandler::printError(std::get<Error>(statement));
+                break;
+            }
+            
+            if (auto result = interpreter.interpret(std::get<Statement_t>(statement)); _check(result)) {
+                ErrorHandler::printError(std::get<Error>(result));
+                break;
+            }
+
+            ++it;
+        }
+         */
+    }
 }
 
 void run(const std::string midiFilename) {
@@ -31,7 +64,7 @@ void run(const std::string midiFilename) {
         std::cerr << "Error reading MIDI file '" << midiFilename << ": " << error.what() << std::endl;  
     }
 
-    Tokenizer tokenizer(midi);
+    Tokenizer tokenizer(*midi.begin());
     Parser parser(tokenizer);
     Parser::ParserIterator it = parser.begin();
 

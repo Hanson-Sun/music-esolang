@@ -5,7 +5,7 @@
 
 int main() {
     Midi midi = MidiReader::read("../midi/parserTest1.mid");
-    Tokenizer tokenizer(midi);
+    Tokenizer tokenizer(*midi.begin());
 
     ASTPrinter printer;
 
@@ -15,6 +15,7 @@ int main() {
         auto result = *it;
         if (_check(result)) {
             std::cout << "WTFFF" << std::endl;
+            ErrorHandler::printError(std::get<Error>(result));
             break;
         }
 

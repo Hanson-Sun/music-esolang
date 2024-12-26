@@ -42,13 +42,17 @@ const std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(11)", TokenType::FREE},
 };
 
-Tokenizer::Tokenizer(Midi& m) : midi(m), groupIt(midi.begin()->group_begin()) {
+Tokenizer::Tokenizer(MidiTrack m) : midi(m), groupIt(midi.group_begin()) {
+    currentToken = chordToToken();
+}
+
+Tokenizer::Tokenizer(std::vector<MidiNote> notes) : midi(notes), groupIt(midi.group_begin()) {
     currentToken = chordToToken();
 }
 
 Tokenizer::TokenizerIterator& Tokenizer::TokenizerIterator::operator++() {
     tokenizer->currentToken = tokenizer->chordToToken();
-    if (!(tokenizer->groupIt != tokenizer->midi.begin()->group_end())) {
+    if (!(tokenizer->groupIt != tokenizer->midi.group_end())) {
         what++;
     }
     return *this;
@@ -97,7 +101,7 @@ TokenType Tokenizer::peek() {
 Token Tokenizer::chordToComment() {
     std::vector<std::string> yeah;
     ++groupIt;
-    while (groupIt != midi.begin()->group_end() && peek() != TokenType::COMMENT) {
+    while (groupIt != midi.group_end() && peek() != TokenType::COMMENT) {
         auto chord = *groupIt;
         for (auto noteIt : chord) {
             const MidiNote& note = *noteIt;
@@ -112,7 +116,7 @@ Token Tokenizer::chordToComment() {
 
 Token Tokenizer::chordToLiteral() {
     std::vector<std::string> yeah;
-    while (groupIt != midi.begin()->group_end() && peek() == TokenType::DIGIT) {
+    while (groupIt != midi.group_end() && peek() == TokenType::DIGIT) {
         auto chord = *groupIt;
 
         auto noteIt = chord[chord.size() - 1];
@@ -123,7 +127,7 @@ Token Tokenizer::chordToLiteral() {
     return Token(TokenType::LITERAL, "lit", value);
 }
 
-int64_t Tokenizer::base12toDecimal(std::vector<std::string> base12) {
+int64_t Tokenizer::base12toDecimal(const std::vector<std::string>& base12) {
     static const std::unordered_map<std::string, int> base12Map = {
         {"C", 0},  {"C#", 1}, {"D", 2},  {"D#", 3}, {"E", 4},   {"F", 5},
         {"F#", 6}, {"G", 7},  {"G#", 8}, {"A", 9},  {"A#", 10}, {"B", 11}};
@@ -150,4 +154,16 @@ Token Tokenizer::chordToKeyword() {
     } else {
         throw std::runtime_error("Invalid chord: " + chordLexeme);
     }
+}
+
+
+std::vector<Token> Tokenizer::tokenize() {
+    std::vector<Token> result;
+    Tokenizer::TokenizerIterator it = this->begin();
+    while (it) {
+        result.push_back(*it);
+        ++it;
+    }
+
+    return result;
 }

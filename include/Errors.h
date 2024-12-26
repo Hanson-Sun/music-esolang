@@ -4,6 +4,17 @@
 #include <unordered_map>
 #include <iostream>
 
+
+#define ERR_RESET   "\033[0m"
+#define ERR_BLACK   "\033[30m"      
+#define ERR_RED     "\033[31m"      
+#define ERR_GREEN   "\033[32m"      
+#define ERR_YELLOW  "\033[33m"      
+#define ERR_BLUE    "\033[34m"      
+#define ERR_MAGENTA "\033[35m"      
+#define ERR_CYAN    "\033[36m"      
+#define ERR_WHITE   "\033[37m"      
+
 enum ErrorCode : int8_t{
     NONE,
     INVALID_TOKEN,
@@ -18,6 +29,7 @@ enum ErrorCode : int8_t{
 
 const std::unordered_map<ErrorCode, std::string> ErrorMessages = {
     {ErrorCode::NONE, "No error"},
+    {ErrorCode::INVALID_TOKEN, "Invalid Token"},
     {ErrorCode::STACK_UNDERFLOW, "Stack underflow"},
     {ErrorCode::INVALID_ADDRESS, "Invalid address"},
     {ErrorCode::IDENTIFIER_NOT_FOUND, "Identifier not found"},
@@ -47,15 +59,15 @@ bool _check(const _<T>& result) {
 class ErrorHandler {
 public:
     static void printError(const Error& error) {
-        std::cerr << "Error: " << ErrorMessages.at(error.code) << ". " << error.message << std::endl;
+        std::cerr << ERR_RED << "Error: " << ErrorMessages.at(error.code) << ". " << ERR_MAGENTA << error.message << ERR_RESET << std::endl;
     }
 
-    static Error createError(ErrorCode code, const std::string& context = "") {
-        std::string message;
+    static Error createError(ErrorCode code, const std::string& context = "", const std::string& message = "") {
+        std::string m = message;
         if (!context.empty()) {
-            message += "\n  ~~~>[" + context + "]";
+            m += "\n  ~~~>[" + context + "]";
         }
-        return Error(code, message);
+        return Error(code, m);
     }
 
     template<typename T>

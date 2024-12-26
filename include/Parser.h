@@ -7,12 +7,13 @@
 // ok it does something idk what tho
 class Parser {
  public:
-    explicit Parser(Tokenizer& tokenizer)
-        : tokenizer(tokenizer),
-          currentToken(tokenizer.begin()),
-          program(std::make_shared<Program>()) {}
-    _<Statement_t> parse();
     Program_t program;
+
+    explicit Parser(Tokenizer& tokenizer)
+        : program(std::make_shared<Program>()),
+          tokenizer(tokenizer),
+          currentToken(tokenizer.begin()) {}
+    _<Statement_t> parse();
 
     // for the interpreter
     class ParserIterator {
@@ -27,21 +28,20 @@ class Parser {
 
         explicit ParserIterator(Parser* parser)
             : currentStatement(std::make_shared<NoOp>()), parser(parser) {
-               currentStatement = parser->parse();
-            }
+            currentStatement = parser->parse();
+        }
         reference operator*() { return currentStatement; }
         ParserIterator& operator++() {
-            if (parser->currentToken)
-               currentStatement = parser->parse();
+            if (parser->currentToken) currentStatement = parser->parse();
             return *this;
         }
-        explicit operator bool() { 
+        explicit operator bool() {
             if (!static_cast<bool>(parser->currentToken)) {
-               return delay++ < 1;
+                return delay++ < 1;
             }
             return static_cast<bool>(parser->currentToken);
         }
-      
+
      private:
         Parser* parser;
     };

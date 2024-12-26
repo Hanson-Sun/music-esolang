@@ -161,10 +161,10 @@ struct Definition : Statement {
 struct Comment : Statement {
     Token token;
     explicit Comment(Token t) : token(t) {}
-    _<> accept(ASTVisitor& visitor) override { return std::monostate();} 
+    _<> accept(ASTVisitor&) override {return std::monostate();} 
 };
 
 struct NoOp : Statement {
     NoOp() {}
-    _<> accept(ASTVisitor& visitor) override { return std::monostate();} 
+    _<> accept(ASTVisitor&) override {return std::monostate();} 
 };

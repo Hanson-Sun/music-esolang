@@ -356,7 +356,7 @@ _<> Interpreter::visit(const IdentifierCall& node) {
     return std::monostate();
 }
 
-_<> Interpreter::visit(const NoOp& node) {
+_<> Interpreter::visit(const NoOp&) {
     return std::monostate();
 }
 

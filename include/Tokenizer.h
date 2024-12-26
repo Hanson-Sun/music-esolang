@@ -60,7 +60,8 @@ class Token {
 
 class Tokenizer {
  public:
-    explicit Tokenizer(Midi& midi);
+    explicit Tokenizer(MidiTrack midi);
+    explicit Tokenizer(std::vector<MidiNote> notes);
 
     class TokenizerIterator {
      private:
@@ -86,8 +87,10 @@ class Tokenizer {
     TokenizerIterator begin() { return TokenizerIterator(this); }
     TokenizerIterator end() { return TokenizerIterator(nullptr); }
 
+    std::vector<Token> tokenize();
+
  private:
-    Midi& midi;
+    MidiTrack midi;
     MidiTrack::GroupIterator groupIt;
     Token currentToken;
     Token chordToToken();
@@ -96,6 +99,7 @@ class Tokenizer {
     Token chordToComment();
     std::string formatCurrentChord();
     std::string pitchToNoteName(int pitch);
-    int64_t base12toDecimal(std::vector<std::string> base12);
+    int64_t base12toDecimal(const std::vector<std::string>& base12);
     TokenType peek();
+
 };
