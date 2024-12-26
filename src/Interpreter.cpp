@@ -246,7 +246,6 @@ _<> Interpreter::visit(const StackOp& node) {
 }
 
 _<> Interpreter::visit(const IoOp& node) {
-    // TODO: implement
     switch (node.op.type) {
         case TokenType::DEBUG: {
             for (auto it = stack.rbegin(); it != stack.rend(); ++it) {
@@ -254,17 +253,65 @@ _<> Interpreter::visit(const IoOp& node) {
             }
             std::cout << std::endl;
         }
+        case TokenType::PRINT: {
+            auto value = pop();
+            if (_check(value))
+                return ErrorHandler::addContext(value, "@ IO print operation: " + node.op.toString());
+
+            std::cout << std::get<int64_t>(value) << std::endl;
+            break;
+        }
+        case TokenType::PRINTCHAR: {
+            auto value = pop();
+            if (_check(value))
+                return ErrorHandler::addContext(value, "@ IO printchar operation: " + node.op.toString());
+
+            std::cout << static_cast<char>(std::get<int64_t>(value)) << std::endl;
+            break;
+        }
+        case TokenType::INPUT: {
+            int64_t value;
+            std::cin >> value;
+            if (auto result = push(value); _check(result))
+                return ErrorHandler::addContext(result, "@ IO input operation: " + node.op.toString());
+            break;
+        }
+        default:
+            return ErrorHandler::createError(ErrorCode::INVALID_TOKEN, "@ IO operation: " + node.op.toString());
+            break;
     }
     return std::monostate();
 }
 
 _<> Interpreter::visit(const IfElse& node) {
-    // TODO: implement
+    //then branch
+    auto value = pop();
+    if (_check(value))
+        return ErrorHandler::addContext(value, "@ IfElse operation: " + node.op.toString());
+    if (std::get<int64_t>(value) != 0) {
+        if (auto result = node.then_branch->accept(*this); _check(result))
+            return ErrorHandler::addContext(result, "@ IfElse operation: " + node.op.toString());
+    } else {
+        // else branch
+        if (node.else_branch) {
+            if (auto result = node.else_branch->accept(*this); _check(result))
+                return ErrorHandler::addContext(result, "@ IfElse operation: " + node.op.toString());
+        }
+    }
     return std::monostate();
 }
 
 _<> Interpreter::visit(const While& node) {
-    // TODO: implement
+    while (true) {
+        auto value = pop();
+        if (_check(value))
+            return ErrorHandler::addContext(value, "@ While operation: " + node.op.toString());
+        if (std::get<int64_t>(value) == 0) {
+            break;
+        }
+        if (auto result = node.body->accept(*this); _check(result))
+            return ErrorHandler::addContext(result, "@ While operation: " + node.op.toString());
+    }
     return std::monostate();
 }
 
