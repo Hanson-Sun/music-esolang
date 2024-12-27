@@ -287,15 +287,15 @@ _<> Interpreter::visit(const IfElse& node) {
     //then branch
     auto value = pop();
     if (_check(value))
-        return ErrorHandler::addContext(value, "@ IfElse operation: " + node.op.toString());
+        return ErrorHandler::addContext(value, "@ IfElse operation: if condition");
     if (std::get<int64_t>(value) != 0) {
         if (auto result = node.then_branch->accept(*this); _check(result))
-            return ErrorHandler::addContext(result, "@ IfElse operation: " + node.op.toString());
+            return ErrorHandler::addContext(result, "@ IfElse operation: if body");
     } else {
         // else branch
         if (node.else_branch) {
             if (auto result = node.else_branch->accept(*this); _check(result))
-                return ErrorHandler::addContext(result, "@ IfElse operation: " + node.op.toString());
+                return ErrorHandler::addContext(result, "@ IfElse operation: else body");
         }
     }
     return std::monostate();
@@ -305,12 +305,12 @@ _<> Interpreter::visit(const While& node) {
     while (true) {
         auto value = pop();
         if (_check(value))
-            return ErrorHandler::addContext(value, "@ While operation: " + node.op.toString());
+            return ErrorHandler::addContext(value, "@ While operation: while condition");
         if (std::get<int64_t>(value) == 0) {
             break;
         }
         if (auto result = node.body->accept(*this); _check(result))
-            return ErrorHandler::addContext(result, "@ While operation: " + node.op.toString());
+            return ErrorHandler::addContext(result, "@ While operation: while body");
     }
     return std::monostate();
 }

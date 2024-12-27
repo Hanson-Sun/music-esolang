@@ -239,5 +239,30 @@ counter ^      # Free the memory used by counter #
 # End of program #
 ```
 
+fib recursion 
+```
+input 
+def 1 
+  dup 1 >        
+  if
+    dup 1 -       
+    f 1 end           
+    swap          
+    dup 2 -       
+    f 1 end           
+    +             
+  else
+    dup 1 =       
+    if
+        1  
+    else
+        0  
+    end
+  end
+end
+f 1 end
+print
+```
+
 
 

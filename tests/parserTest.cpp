@@ -4,7 +4,7 @@
 #include "../include/ASTVisitor.h"
 
 int main() {
-    Midi midi = MidiReader::read("../midi/parserTest1.mid");
+    Midi midi = MidiReader::read("../midi/fibrecursive.mid");
     Tokenizer tokenizer(*midi.begin());
 
     ASTPrinter printer;
