@@ -203,7 +203,7 @@ make
 ```
 for intepreter:
 ```
-./polyphony filename.mid 2
+./polyphony filename.mid
 ```
 for debugging:
 
