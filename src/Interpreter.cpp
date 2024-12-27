@@ -464,15 +464,6 @@ _<> Interpreter::getFunc(int64_t funcName) {
         auto func_it = it->func_defs.find(funcName);
         if (func_it != it->func_defs.end()) {
             // execute function
-            for (auto elem : stack) {
-                std::cout << elem << " ";
-            }
-            std::cout << std::endl;
-
-            if (stack.size() > 10) {
-                return ErrorHandler::createError(ErrorCode::IDENTIFIER_NOT_FOUND, "PENIS" + std::to_string(funcName));
-            }
-
             if (auto result = func_it->second->accept(*this); _check(result)) {
                 return ErrorHandler::addContext(result, "@ Function: " + std::to_string(funcName));
             }
