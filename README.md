@@ -1,10 +1,10 @@
 # Polyphony - A MIDI Based Esolang
 
 ## Table of Contents
-### [Overview](#Overview)
-### [Syntax Semantics & Grammar](#Overview)
-### [Examples](#Overview)
-### [Setup](#Setup)
+### [Overview](#overview)
+### [Syntax Semantics and Grammar](#syntax-semantics-and-grammar)
+### [Examples](#examples)
+### [Setup](#setup)
 
 ## Overview
 Polyphony is an interpreted concatenative stack based language that is written using MIDI files. Inspiration for the language design stem from languages like Forth, Joy, and uiua.
@@ -19,7 +19,7 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 
 If a chord that is not recognized as a keyword is played, the highest note of the chord will be used as the literal.
 
-## Syntax Semantics & Grammar
+## Syntax Semantics and Grammar
 Polyphony has 31 keywords and they are all listed below. For readability, we have provided descriptive keywords along with the interval based ones. They will be used interchangbly from now on. 
 
 **general**
