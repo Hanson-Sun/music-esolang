@@ -1,21 +1,29 @@
 # Polyphony - A MIDI Based Esolang
 
 ## Table of Contents
-### [Overview](#overview)
-### [Syntax Semantics and Grammar](#syntax-semantics-and-grammar)
-### [Examples](#examples)
-### [Setup](#setup)
+- [Polyphony - A MIDI Based Esolang](#polyphony---a-midi-based-esolang)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Syntax Semantics and Grammar](#syntax-semantics-and-grammar)
+    - [Syntax](#syntax)
+    - [Semantics](#semantics)
+    - [Grammar](#grammar)
+  - [Examples](#examples)
+    - [Recursive Fibonacci](#recursive-fibonacci)
+    - [Iterative Fibonacci](#iterative-fibonacci)
+  - [Setup](#setup)
+
 
 ## Overview
-Polyphony is an interpreted concatenative stack-based language that is written using MIDI files. Inspiration for the language design stem from languages like Forth, Joy, and uiua. Our design philosophy is to give the user as much creative freedom as possible to make music while still writing functional code. Thus, we have chosen to make it stack-based to reduce the instruction set. It also makes for simple parsing and straightforward execution. 
+Polyphony is an interpreted stack-based concatenative language that is written using MIDI files. Inspiration for the language design stem from languages like Forth, Joy, and uiua. Our design philosophy is to give the user as much creative freedom as possible to make music while still writing functional code. Thus, we have chosen to make it stack-based to reduce the instruction set. Moreover, it reduces the complexity of the grammar which simplifies parsing and ensures straightforward execution precedence. 
 
-A concatenative language is a language where multiple functions (we refer to them as operators in Polyphony) operate on a single implicit data structure, as opposed to applicative languages like Haskell where functions are applied to arguments. It is a point-free language, where programs are built through function composition, and function composition is achieved simply by placing functions next to each other. In our case, the single data structure is a stack (hence, stack-based concatenative language). ie: A literal by itself is pushed onto the stack and all operators take inputs from the stack and then push the output back onto the stack. 
+A *concatenative* language is a language where multiple functions (we refer to them as operators in Polyphony) operate on a single implicit data structure, as opposed to *applicative* languages like Haskell where functions are applied to arguments. It is a point-free language, where programs are built through function composition, and function composition is achieved simply by placing functions next to each other. In our case, the single data structure is a stack (hence, stack-based concatenative language). ie: A literal by itself is pushed onto the stack and all operators take inputs from the stack and then push the output back onto the stack. 
 
-Polyphony only supports one type of literals: 64 byte integers (`int64_t`). 
+Polyphony only supports one type of literals: 64 byte integers (`int64_t`). Characters are implicitly represented by their ASCII values as integers.
 
-In general, there are certain chords reserved as keywords. For our purposes, a chord is defined as 2 or more notes played simultaneously (Take care that one note can be part of multiple chords depending on its length and overlap with other notes). If a chord that is not recognized as a keyword is played, the highest note of the chord will be used as the literal. Outside of this, single notes are considered as literals.
+In general, certain chords reserved as keywords. For our purposes, a chord is defined as 2 or more notes played simultaneously (Take care that one note can be part of multiple chords depending on its length and overlap with other notes). If a chord that is not recognized as a keyword is played, the highest note of the chord will be used as the literal. Outside of this, single notes are considered as literals.
 
-Polyphony operates on a base 12 number system. Each semitone represents a digit, with `C` being `0` and `B` being `11`. The octave doesn't matter so both `C#4` and `C#5` represent 1. 
+Polyphony operates on a base 12 number system. Each semitone represents a digit, with `C` being `0` and `B` being `11`. The octave doesn't matter so both `C#4` and `C#5` represent `1`. 
 
 As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes (More specifically, the amount of semitones between any 2 consective notes of a chord as opposed to intervals based on scales). From now on, we will represent a chord by its intervals. ex: an octave is written as `(13)` and the chord `CC#E` is written as `(2,4)`. In case it is not obvious these are written in base 10.
 
@@ -24,53 +32,55 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 ### Syntax
 Polyphony has 31 keywords and they are all listed below. For readability, we have provided descriptive keywords along with the interval based ones. They will be used interchangebly from now on. 
 
+Binary operations read in RPL notation, meaning the operation `1 - 2` is `1 2 -` in Polyphony.
+
 **general**
-- (5): `def` start of definition
-- (5, 4): `end` marks the end of identifier calls, control flow chunks, definitions
-- (5, 5): `space` optionally, marks the end of literals
-- (13): `#` comment wrappers
-- (4): `f` start of identifier call (executes definition or pushes variable address to top of stack, depending on the identifier)
+- `(5)`: `def` start of definition
+- `(5, 4)`: `end` marks the end of identifier calls, control flow chunks, definitions
+- `(5, 5)`: `space` optionally marks the end of literals
+- `(13)`: `#` comment wrappers
+- `(4)`: `f` start of identifier call (executes definition or pushes variable address to top of stack, depending on the identifier)
 
 **arithmetic operations**
-- (8, 2): `+` pops 2 items off the stack and pushes their sum onto the stack
-- (8, 3): `-` pops 2 items off the stack and pushes $(\text{second item} - \text{top)}$
-- (8, 4): `*` pops 2 items off the stack and pushes their product onto the stack
-- (8, 5): `/` pops 2 items off the stack and pushes $(\text{second item} / \text{top)}$
-- (8, 6): `%` pops 2 items off the stack and pushes $(\text{second item} \bmod \text{top)}$
+- `(8, 2)`: `+` pops 2 items off the stack and pushes their sum onto the stack
+- `(8, 3)`: `-` pops 2 items off the stack and pushes $(s_1 - s_0)$
+- `(8, 4)`: `*` pops 2 items off the stack and pushes their product onto the stack
+- `(8, 5)`: `/` pops 2 items off the stack and pushes $(s_1 / s_0)$
+- `(8, 6)`: `%` pops 2 items off the stack and pushes $(s_1 \bmod s_0)$
 
 **logical operations (binary)**
-- (7, 2): `=` pops 2 items off the stack and pushes 1 if they are equal, 0 otherwise
-- (7, 3): `<` pops 2 items off the stack and pushes 1 if  $(\text{second item} < \text{top)}$, 0 otherwise
-- (7, 4): `>` pops 2 items off the stack and pushes 1 if  $(\text{second item} > \text{top)}$, 0 otherwise
+- `(7, 2)`: `=` pops 2 items off the stack and pushes 1 if they are equal, 0 otherwise
+- `(7, 3)`: `<` pops 2 items off the stack and pushes 1 if  $(s_1 <  s_0)$, 0 otherwise
+- `(7, 4)`: `>` pops 2 items off the stack and pushes 1 if  $(s_1 >  s_0)$, 0 otherwise
 
 **logical operations (unary)**
-- (6, 2): `&` pops 2 items off the stack and pushes bitwise and
-- (6, 3): `|` pops 2 items off the stack and pushes bitwise or
-- (6, 4): `~` pops 2 items off the stack and pushes bitwise not
+- `(6, 2)`: `&` pops 2 items off the stack and pushes bitwise and
+- `(6, 3)`: `|` pops 2 items off the stack and pushes bitwise or
+- `(6, 4)`: `~` pops 2 items off the stack and pushes bitwise not
 
 **stack manipulation**
-- (9, 2): `pop` pops the top of the stack
-- (9, 3): `dup` duplicates the top of the stack
-- (9, 4): `dup.`pops the top of the stack. not counting the item just popped, duplicates the nth item. ex: `1 dup.` duplicates the second item on the stack not counting 1.
-- (9, 5): `swap`swaps the first and second items on the stack
-- (9, 6): `size`returns the size of the stack and pushes it onto the stack
+- `(9, 2)`: `pop` pops the top of the stack
+- `(9, 3)`: `dup` duplicates the top of the stack
+- `(9, 4)`: `dup.`pops the top of the stack. not counting the item just popped, duplicates the nth item. ex: `1 dup.` duplicates the second item on the stack not counting 1.
+- `(9, 5)`: `swap`swaps the first and second items on the stack
+- `(9, 6)`: `size`returns the size of the stack and pushes it onto the stack
 
-**i/o operations**
-- (5, 4, 4): `input` reads a value from the console and pushes it onto the stack 
-- (5, 4, 5): `print` pops and prints the top of the stack onto the console as a number
-- (5, 4, 6): `print-` pops and prints the top of the stack onto the console as a ASCII character
-- (5, 4, 7): `debug` prints the entire stack onto the console
+**I/O operations**
+- `(5, 4, 4)`: `input` reads a value from the console and pushes it onto the stack 
+- `(5, 4, 5)`: `print` pops and prints the top of the stack onto the console as a number
+- `(5, 4, 6)`: `print-` pops and prints the top of the stack onto the console as a ASCII character
+- `(5, 4, 7)`: `debug` prints the entire stack onto the console
 
 **conditionals & branching**
-- (5, 5, 4): `if`  pops the top of the stack, if it is 0, executes the second (`else`) block, otherwise executes the first (`if`) block
-- (5, 5, 5): `else`
-- (5, 5, 6): `while` pops the top of the stack, if it is 0, exit the loop. Otherwise, executes the block between the `while` and `end` commands
+- `(5, 5, 4)`: `if`  pops the top of the stack, if it is 0, executes the second (`else`) block, otherwise executes the first (`if`) block
+- `(5, 5, 5)`: `else`
+- `(5, 5, 6)`: `while` pops the top of the stack, if it is 0, exit the loop. Otherwise, executes the block between the `while` and `end` commands
 
 **variables**
-- (8): `var` start of variable declaration
-- (9): `!`  pops 2 items off the stack. top of the stack is the value, second item is the address. Stores the value at the address
-- (10): `@` pops the top of the stack, gets the value at the address and pushes it onto the the stack
-- (11): `^` pops the top of the stack, frees the memory at the address on the top of the stack 
+- `(8)`: `var` start of variable declaration
+- `(9)`: `!`  pops 2 items off the stack. top of the stack is the value, second item is the address. Stores the value at the address
+- `(10)`: `@` pops the top of the stack, gets the value at the address and pushes it onto the the stack
+- `(11)`: `^` pops the top of the stack, frees the memory at the address on the top of the stack 
 
 ### Semantics 
 
@@ -128,9 +138,7 @@ For those interested, here's the formal grammar written in EBNF:
 <while>          ::= "while" <block> "end"
 <block>          ::= { <statement> }
 
-<variable-op>    ::= "!"       (* Store: top of stack is value, second is address *)
-                   | "@"       (* Load: push value at address to the stack *)
-                   | "^"       (* Free: free memory at the address on top of the stack *)
+<variable-op>    ::= "!" | "@" | "^"      
 
 <variable-dec> ::= "var" <identifier>
 
