@@ -3,7 +3,7 @@
 #include "../include/Tokenizer.h"
 
 int main() {
-    Midi midi = MidiReader::read("../midi/fibdp.mid");
+    Midi midi = MidiReader::read("../midi/tokentest2.mid");
     Tokenizer tokenizer(*midi.begin());
     Tokenizer::TokenizerIterator tokenizerIt = tokenizer.begin();
     while (tokenizerIt) {
