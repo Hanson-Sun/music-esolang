@@ -86,7 +86,7 @@ Binary operations read in RPN, meaning the operation `1 - 2` is `1 2 -` in Polyp
 
 ### Semantics 
 
-To give some further specifications, note that comments are written ```# anything in between here will be ignored by the interpreter #``` as opposed to a singular `#`|(13) similar to languages like Python. This is to account for the fact that MIDI does not have spaces or linebreaks to act as delimiters, such as in text. Similarly, literals are *optionally* separated by the `space`|(5, 5) keyword. This means if we have 2 literals consecutively, we must use the `space` keyword to distinguish them as 2 separate literals, but if a literal is followed by a keyword, `space` is not needed. 
+To give some further specifications, note that comments are written ```# anything in between here will be ignored by the interpreter #``` as opposed to a singular `#`|`(13)` similar to languages like Python. This is to account for the fact that MIDI does not have spaces or linebreaks to act as delimiters, such as in text. Similarly, literals are *optionally* separated by the `space`|`(5, 5)` keyword. This means if we have 2 literals consecutively, we must use the `space` keyword to distinguish them as 2 separate literals, but if a literal is followed by a keyword, `space` is not needed. 
 
 Therefore ``` 1 space 1 + ``` and ```1 space 1 space +``` are both valid.
 
