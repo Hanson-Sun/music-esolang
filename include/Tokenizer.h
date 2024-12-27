@@ -39,6 +39,7 @@ enum TokenType {
     LOAD,     // @
     FREE,     // ^
     END,
+    SPACE,
     COMMENT,
     DIGIT  // solely used for peek()
 };

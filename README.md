@@ -242,7 +242,7 @@ counter ^      # Free the memory used by counter #
 fib recursion 
 ```
 input 
-def 1 
+def 1 end
   dup 1 >        
   if
     dup 1 -       

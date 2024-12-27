@@ -67,10 +67,10 @@ _<Statement_t> Parser::statement() {
 _<Statement_t> Parser::literal() {
     Literal_t temp = std::make_shared<Literal>(*currentToken);
     consumeToken();
-    // optional end token
-    if ((*currentToken).type == END) {
-        consumeToken();
-    }
+    // optional space token
+        if ((*currentToken).type == SPACE) {
+            consumeToken();
+        }
     return temp;
 }
 
@@ -152,7 +152,7 @@ _<Statement_t> Parser::whileStatement() {
 
 _<Statement_t> Parser::identifierCall() {
     consumeToken();  // consume "f"
-    auto id = identifier();
+    auto id = literal();
     if (_check(id))
         return ErrorHandler::addContext(id, "@ Identifier call: " + (*currentToken).toString());
 
@@ -167,7 +167,7 @@ _<Statement_t> Parser::identifierCall() {
 
 _<Statement_t> Parser::variableDeclaration() {
     consumeToken();  // consume "var"
-    auto id = identifier();
+    auto id = literal();
     if (_check(id))
         return ErrorHandler::addContext(id, "@ Variable declaration: " + (*currentToken).toString());
 
@@ -188,9 +188,16 @@ _<Statement_t> Parser::variableOp() {
 
 _<Statement_t> Parser::definition() {
     consumeToken();  // consume "def"
-    auto id = identifier();
+    auto id = literal();
     if (_check(id))
         return ErrorHandler::addContext(id, "@ Definition: " + (*currentToken).toString());
+
+    if ((*currentToken).type == END) {
+        consumeToken();  // consume "end"
+    } else {
+        //error stop building syntax tree
+        return ErrorHandler::createError(ErrorCode::MISSING_END_TOKEN, "Expected 'end' after definition identifier: " + (*currentToken).toString());
+    }
 
     Block_t body = std::make_shared<Block>();
     while ((*currentToken).type != END && currentToken) {

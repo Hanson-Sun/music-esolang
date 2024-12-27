@@ -11,6 +11,7 @@
 const std::unordered_map<std::string, TokenType> CHORDTOKENMAP = {
     {"(5)", TokenType::DEF},
     {"(5, 4)", TokenType::END},
+    {"(5, 5)", TokenType::SPACE},
     {"(13)", TokenType::COMMENT},
     {"(4)", TokenType::F},
     {"(8, 2)", TokenType::ADD},
