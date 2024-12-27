@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
         std::string midiFilename = argv[2];
         printTokenizedResults(midiFilename);
     } else if (argc == 2) {
-        run(argv[2]);
+        run(argv[1]);
     } else {
         std::cerr << "Incorrect parameters. " << std::endl;
         printHelp(argv[0]);
