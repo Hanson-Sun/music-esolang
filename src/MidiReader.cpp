@@ -25,6 +25,9 @@ MidiTrack::GroupIterator& MidiTrack::GroupIterator::operator=(const GroupIterato
 
 std::vector<MidiTrack::const_iterator> MidiTrack::findChord(const_iterator noteIt) const {
     std::vector<const_iterator> chord;
+    if (noteIt == end())
+        return chord;
+    
     const MidiNote& note = *noteIt;
 
     for (auto it = begin(); it != end(); ++it) {
@@ -42,6 +45,10 @@ std::vector<MidiTrack::const_iterator> MidiTrack::findChord(const_iterator noteI
 
 std::vector<MidiTrack::iterator> MidiTrack::findChord(iterator noteIt) {
     std::vector<iterator> chord;
+
+    if (noteIt == end())
+        return chord;
+
     MidiNote& note = *noteIt;
 
     for (auto it = begin(); it != end(); ++it) {
@@ -63,7 +70,8 @@ MidiTrack::GroupIterator::GroupIterator(TrackType& track, iterator start)
         chordCache.clear();
     }
 
-    lastChord = findChordWithCache(current);
+    if (start != track.end())
+        lastChord = findChordWithCache(current);
 }
 
 void MidiTrack::GroupIterator::reset() {
