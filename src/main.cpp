@@ -131,13 +131,15 @@ int main(int argc, char* argv[]) {
     }
 
     if (argc == 1) {
-        repl();
+        repl();  
     } else if (std::string arg = std::string(argv[1]); (arg == "-p" || arg == "--parse") && argc == 3) {
         std::string midiFilename = argv[2];
         printParsedResults(midiFilename);
     } else if (std::string arg = std::string(argv[1]); (arg == "-t" || arg == "--tokenize") && argc == 3) {
         std::string midiFilename = argv[2];
         printTokenizedResults(midiFilename);
+    } else if (argc == 2) {
+        run(argv[1]);
     } else {
         std::cerr << "Incorrect parameters. " << std::endl;
         printHelp(argv[0]);

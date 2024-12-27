@@ -110,6 +110,6 @@ _<> ASTPrinter::visit(const Definition& node) {
     return std::monostate{};
 }
 
-_<> ASTPrinter::visit(const NoOp& node) {
+_<> ASTPrinter::visit(const NoOp&) {
     return std::monostate();
 }
