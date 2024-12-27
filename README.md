@@ -97,13 +97,14 @@ Polyphony doesn't have hoisting. Variables and definitions are initialized as th
 ```var 1 end f 1 end``` executes correctly but ```f 1 end var 1 end``` is incorrect. Similarly, 
 ```def 1 end #block# end f 1 end``` executes correctly but ```f 1 end def 1 end #block# end``` does not. 
 
-The scope of a variable or definition is within its respective block. If the variable or definition is not declared within a block, then it is a global variable/def that can be accessed anywhere. There is no garbage collector so please free your variables accordingly.
+The scope of a variable or definition is within its respective block. If the variable or definition is not declared within a block, then it is a global variable/def that can be accessed anywhere. 
+
+Variables work like `malloc` in a sense that they allocate memory and returns the *address* of the memory. This address is then used to access the value stored at that address. You **cannot** directly access the value of a variable through a variable call. There is no garbage collector so you must manage memory manually (or else there will be mem leaks!).
 
 Note that while 2 variables/definitions cannot have the same name if they are in the same scope, you are free to declare two variables/defs with the same name if they are in different scopes, or if the previous variable has already been freed. 
 
 ex. ```if var 1 end f 1 end ^ end var 1 end ``` is correct.
 
-Variables work like `malloc` in a sense that they allocate memory and returns the *address* of the memory. This address is then used to access the value stored at that address. You **cannot** directly access the value of a variable through a variable call. There is no garbage collector so you must manage memory manually (or else there will be mem leaks!).
 
 
 ### Grammar
