@@ -4,7 +4,9 @@
 #include "../include/ASTVisitor.h"
 
 int main() {
-    Midi midi = MidiReader::read("../midi/parserTest1.mid");
+    std::string filename;
+    std::cin >> filename;
+    Midi midi = MidiReader::read(filename);
     Tokenizer tokenizer(*midi.begin());
 
     ASTPrinter printer;

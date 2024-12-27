@@ -61,9 +61,11 @@ _<> ASTPrinter::visit(const IfElse& node) {
     int curdepth = depth;
     depth++;
     node.then_branch->accept(*this);
-    depth = curdepth+1;
     if (node.else_branch) {
+        depth = curdepth;
+        printDepth();
         std::cout << "Else:" << std::endl;
+        depth = curdepth+1;
         node.else_branch->accept(*this);
     }
     depth = curdepth;
