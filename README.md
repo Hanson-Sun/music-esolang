@@ -34,7 +34,7 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 ### Syntax
 Polyphony has 31 keywords and they are all listed below. For readability, we have provided descriptive keywords along with the interval based ones. They will be used interchangeably from now on. 
 
-Binary operations read in RPL notation, meaning the operation `1 - 2` is `1 2 -` in Polyphony.
+Binary operations read in RPN, meaning the operation `1 - 2` is `1 2 -` in Polyphony.
 
 **general**
 - `(5)`: `def` start of definition

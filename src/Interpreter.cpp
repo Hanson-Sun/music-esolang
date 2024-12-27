@@ -241,6 +241,7 @@ _<> Interpreter::visit(const StackOp& node) {
 _<> Interpreter::visit(const IoOp& node) {
     switch (node.op.type) {
         case TokenType::DEBUG: {
+            std::cout << "stack: ";
             for (auto it = stack.rbegin(); it != stack.rend(); ++it) {
                 std::cout << *it << " ";
             }
