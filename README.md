@@ -12,6 +12,8 @@
     - [Recursive Fibonacci](#recursive-fibonacci)
     - [Iterative Fibonacci](#iterative-fibonacci)
   - [Setup](#setup)
+    - [Build instructions](#build-instructions)
+    - [Usage](#usage)
 
 
 ## Overview
@@ -25,12 +27,12 @@ In general, certain chords reserved as keywords. For our purposes, a chord is de
 
 Polyphony operates on a base 12 number system. Each semitone represents a digit, with `C` being `0` and `B` being `11`. The octave doesn't matter so both `C#4` and `C#5` represent `1`. 
 
-As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes (More specifically, the amount of semitones between any 2 consective notes of a chord as opposed to intervals based on scales). From now on, we will represent a chord by its intervals. ex: an octave is written as `(13)` and the chord `CC#E` is written as `(2,4)`. In case it is not obvious these are written in base 10.
+As opposed to being identified by the specific notes in a chord, chords are identified by the intervals between its notes (More specifically, the amount of semitones between any 2 consecutive notes of a chord as opposed to intervals based on scales). From now on, we will represent a chord by its intervals. ex: an octave is written as `(13)` and the chord `CC#E` is written as `(2,4)`. In case it is not obvious these are written in base 10.
 
 ## Syntax Semantics and Grammar
 
 ### Syntax
-Polyphony has 31 keywords and they are all listed below. For readability, we have provided descriptive keywords along with the interval based ones. They will be used interchangebly from now on. 
+Polyphony has 31 keywords and they are all listed below. For readability, we have provided descriptive keywords along with the interval based ones. They will be used interchangeably from now on. 
 
 Binary operations read in RPL notation, meaning the operation `1 - 2` is `1 2 -` in Polyphony.
 
@@ -84,12 +86,12 @@ Binary operations read in RPL notation, meaning the operation `1 - 2` is `1 2 -`
 
 ### Semantics 
 
-To give some further specifications, note that comments are written ```# anything in between here will be ignored by the intepreter #``` as opposed to a singular `#`|(13) similar to languages like Python. This is to account for the fact that MIDI does not have spaces or linebreaks to act as delimiters, such as in text. Similarly, literals are *optionally* seperated by the `space`|(5, 5) keyword. This means if we have 2 literals consecutively, we must use the `space` keyword to distinguish them as 2 separate literals, but if a literal is followed by a keyword, `space` is not needed. 
+To give some further specifications, note that comments are written ```# anything in between here will be ignored by the interpreter #``` as opposed to a singular `#`|(13) similar to languages like Python. This is to account for the fact that MIDI does not have spaces or linebreaks to act as delimiters, such as in text. Similarly, literals are *optionally* separated by the `space`|(5, 5) keyword. This means if we have 2 literals consecutively, we must use the `space` keyword to distinguish them as 2 separate literals, but if a literal is followed by a keyword, `space` is not needed. 
 
 Therefore ``` 1 space 1 + ``` and ```1 space 1 space +``` are both valid.
 
-Identifier calls are defined as ```f <name> end```, variables as ```var <name> end```, defintions as 
-```def <name> end <body> end```, ifelse as ```if <block> else <block> end``` or ```if <block> end```, and while loops as ```while <block> end```. A block is a list of statements that the intepreter executes as one chunk.
+Identifier calls are defined as ```f <name> end```, variables as ```var <name> end```, definitions as 
+```def <name> end <body> end```, ifelse as ```if <block> else <block> end``` or ```if <block> end```, and while loops as ```while <block> end```. A block is a list of statements that the interpreter executes as one chunk.
 
 Polyphony doesn't have hoisting. Variables and definitions are initialized as they appear in the code. So 
 ```var 1 end f 1 end``` executes correctly but ```f 1 end var 1 end``` is incorrect. Similarly, 
@@ -100,6 +102,9 @@ The scope of a variable or definition is within its respective block. If the var
 Note that while 2 variables/definitions cannot have the same name if they are in the same scope, you are free to declare two variables/defs with the same name if they are in different scopes, or if the previous variable has already been freed. 
 
 ex. ```if var 1 end f 1 end ^ end var 1 end ``` is correct.
+
+Variables work like `malloc` in a sense that they allocate memory and returns the *address* of the memory. This address is then used to access the value stored at that address. You **cannot** directly access the value of a variable through a variable call. There is no garbage collector so you must manage memory manually (or else there will be mem leaks!).
+
 
 ### Grammar
 
@@ -203,23 +208,32 @@ Below is an iterative/dp implementation of fibonacci
 | IoOp: (5, 4, 5)
 ```
 ## Setup
+
+### Build instructions
 ```
 mkdir build
 cd build
 cmake ..
 make
 ```
-for intepreter:
-```
+
+### Usage
+Run file
+```bash
 ./polyphony filename.mid
 ```
-for debugging:
 
-this prints the abstract syntax tree
-```
+print the abstract syntax tree
+```bash
 ./polyphony -p filename.mid 
 ```
-this prints the tokenized file
-```
+
+print the tokenized file
+```bash
 ./polyphony -t filename.mid 
+```
+
+see help menu
+```bash
+./polyphony -h
 ```
