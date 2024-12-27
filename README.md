@@ -121,9 +121,9 @@ No explicit return or parameter passing. Instead, the stack is used to pass para
 
 **Variables** (stolen from Forth):
 - `var <name>`: creates an address in memory for a variable
-- `!`: top of the stack is the value, second item is the address. Stores the value at the address
-- `@`: gets the value at the address on the top of the stack and pushes it onto the the stack
-- `^`: frees the memory at the address on the top of the stack
+- `!`: top of the stack is the value, second item is the address. Pops both and stores the value at the address
+- `@`: pops the value at the address on the top of the stack and pushes it onto the the stack
+- `^`: frees the memory at the address on the top of the stack (pops address)
 
 **Misc**:
 - `# <...> #`: anything between `#` is a comment and is ignored
