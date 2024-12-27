@@ -2,7 +2,7 @@
 
 ## Table of Contents
 ### [Overview](#overview)
-### [Syntax Semantics & Grammar](#grammar)
+### [Syntax Semantics and Grammar](#syntax-semantics-and-grammar)
 ### [Examples](#examples)
 ### [Setup](#setup)
 
@@ -19,7 +19,7 @@ As opposed to being identified by the specific notes in a chord, chords are iden
 
 If a chord that is not recognized as a keyword is played, the highest note of the chord will be used as the literal.
 
-## Grammar
+## Syntax Semantics and Grammar
 Polyphony has 31 keywords and they are all listed below. For readability, we have provided descriptive keywords along with the interval based ones. They will be used interchangbly from now on. 
 
 **general**
