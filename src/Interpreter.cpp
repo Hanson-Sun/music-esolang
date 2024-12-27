@@ -48,7 +48,7 @@ _<> Interpreter::visit(const ArithmeticOp& node) {
             if (_check(b))
                 return ErrorHandler::addContext(b, "@ Arithmetic - operation: " + node.op.toString());
 
-            if (auto result = push(std::get<int64_t>(a) - std::get<int64_t>(b)); _check(result))
+            if (auto result = push(std::get<int64_t>(b) - std::get<int64_t>(a)); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic - operation: " + node.op.toString());
             break;
         }
@@ -74,7 +74,7 @@ _<> Interpreter::visit(const ArithmeticOp& node) {
             if (_check(b))
                 return ErrorHandler::addContext(b, "@ Arithmetic / operation: " + node.op.toString());
 
-            if (auto result = push(std::get<int64_t>(a) / std::get<int64_t>(b)); _check(result))
+            if (auto result = push(std::get<int64_t>(b) / std::get<int64_t>(a)); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic / operation: " + node.op.toString());
             break;
         }
@@ -87,7 +87,7 @@ _<> Interpreter::visit(const ArithmeticOp& node) {
             if (_check(b))
                 return ErrorHandler::addContext(b, "@ Arithmetic % operation: " + node.op.toString());
 
-            if (auto result = push(std::get<int64_t>(a) % std::get<int64_t>(b)); _check(result))
+            if (auto result = push(std::get<int64_t>(b) % std::get<int64_t>(a)); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic % operation: " + node.op.toString());
             break;
         }
@@ -122,7 +122,7 @@ _<> Interpreter::visit(const LogicalOp& node) {
             if (_check(b))
                 return ErrorHandler::addContext(b, "@ Logical < operation: " + node.op.toString());
 
-            if (auto result = push(std::get<int64_t>(a) < std::get<int64_t>(b)); _check(result))
+            if (auto result = push(std::get<int64_t>(b) < std::get<int64_t>(a)); _check(result))
                 return ErrorHandler::addContext(result, "@ Logical < operation: " + node.op.toString());
             break;
         }
@@ -135,7 +135,7 @@ _<> Interpreter::visit(const LogicalOp& node) {
             if (_check(b))
                 return ErrorHandler::addContext(b, "@ Logical > operation: " + node.op.toString());
 
-            if (auto result = push(std::get<int64_t>(a) > std::get<int64_t>(b)); _check(result))
+            if (auto result = push(std::get<int64_t>(b) > std::get<int64_t>(a)); _check(result))
                 return ErrorHandler::addContext(result, "@ Logical > operation: " + node.op.toString());
             break;
         }
@@ -252,6 +252,7 @@ _<> Interpreter::visit(const IoOp& node) {
                 std::cout << *it << " ";
             }
             std::cout << std::endl;
+            break;
         }
         case TokenType::PRINT: {
             auto value = pop();
@@ -463,6 +464,15 @@ _<> Interpreter::getFunc(int64_t funcName) {
         auto func_it = it->func_defs.find(funcName);
         if (func_it != it->func_defs.end()) {
             // execute function
+            for (auto elem : stack) {
+                std::cout << elem << " ";
+            }
+            std::cout << std::endl;
+
+            if (stack.size() > 10) {
+                return ErrorHandler::createError(ErrorCode::IDENTIFIER_NOT_FOUND, "PENIS" + std::to_string(funcName));
+            }
+
             if (auto result = func_it->second->accept(*this); _check(result)) {
                 return ErrorHandler::addContext(result, "@ Function: " + std::to_string(funcName));
             }
