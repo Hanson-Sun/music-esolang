@@ -198,22 +198,15 @@ _<> Interpreter::visit(const StackOp& node) {
             break;
         }
         case TokenType::DUPDOT: {
-            auto t = top();
+            auto t = pop();
             if (_check(t))
                 return ErrorHandler::addContext(t, "@ Stack dup. operation: " + node.op.toString());
 
-            if (auto result = pop(); _check(result))
-                return ErrorHandler::addContext(result, "@ Stack dup. operation: " + node.op.toString());
+            if (std::get<int64_t>(t) > static_cast<int64_t>(stack.size()) - 1)
+                return ErrorHandler::createError(ErrorCode::STACK_UNDERFLOW, "dup. stack underflow with value: " +  std::to_string(std::get<int64_t>(t)));
 
-            auto s = top();
-            if (_check(s))
-                return ErrorHandler::addContext(s, "@ Stack dup. operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(t)); _check(result))
-                return ErrorHandler::addContext(result, "@ Stack dup. operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(s)); _check(result))
-                return ErrorHandler::addContext(result, "@ Stack dup. operation: " + node.op.toString());
+            if (auto result = push(stack.at(stack.size() - 1 - std::get<int64_t>(t))); _check(result))
+                return ErrorHandler::addContext(t, "@ Stack dup. operation: " + node.op.toString());
             break;
         }
         case TokenType::SWAP: {
