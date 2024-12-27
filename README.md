@@ -21,6 +21,8 @@ Polyphony is an interpreted stack-based concatenative language that is written u
 
 A *concatenative* language is a language where multiple functions (we refer to them as operators in Polyphony) operate on a single implicit data structure, as opposed to *applicative* languages like Haskell where functions are applied to arguments. It is a point-free language, where programs are built through function composition, and function composition is achieved simply by placing functions next to each other. In our case, the single data structure is a stack (hence, stack-based concatenative language). ie: A literal by itself is pushed onto the stack and all operators take inputs from the stack and then push the output back onto the stack. 
 
+Being an interpreted language, Polyphony can dynamically execute programs statement by statement, with a *possible* extension to a REPL like feature. Moreover, Polyphony features extensive error handling and error propagation in both parsing and execution steps. 
+
 Polyphony only supports one type of literals: 64 byte integers (`int64_t`). Characters are implicitly represented by their ASCII values as integers.
 
 In general, certain chords reserved as keywords. For our purposes, a chord is defined as 2 or more notes played simultaneously (Take care that one note can be part of multiple chords depending on its length and overlap with other notes). If a chord that is not recognized as a keyword is played, the highest note of the chord will be used as the literal. Outside of this, single notes are considered as literals.
@@ -238,3 +240,5 @@ see help menu
 ```bash
 ./polyphony -h
 ```
+
+
