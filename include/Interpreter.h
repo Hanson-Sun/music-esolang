@@ -35,15 +35,14 @@ class Interpreter : public ASTVisitor {
     _<> visit(const NoOp& node) override;
 
  private:
-    struct Scope {
-        std::unordered_map<int64_t, Block_t> func_defs;
-        std::unordered_map<int64_t, int64_t> var_defs;
-    };
 
     std::vector<int64_t> stack;
+    
     // okay so a stack of scopes
+    std::vector<std::vector<int64_t>> scopes;  
 
-    std::vector<Scope> scopes;  
+    std::unordered_map<int64_t, Block_t> func_defs;
+    std::unordered_map<int64_t, int64_t> var_defs;
 
     // arena for var op creation
     std::vector<int64_t> arena;

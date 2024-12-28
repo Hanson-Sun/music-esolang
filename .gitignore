@@ -1,6 +1,7 @@
 .vscode
 *.o
 .DS_Store
+misc
 build/
 tests/tokenTest
 tests/midiTest

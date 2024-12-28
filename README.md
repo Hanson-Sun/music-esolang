@@ -14,6 +14,7 @@
   - [Setup](#setup)
     - [Build instructions](#build-instructions)
     - [Usage](#usage)
+    - [Profiling](#profiling)
 
 
 ## Overview
@@ -239,6 +240,23 @@ print the tokenized file
 see help menu
 ```bash
 ./polyphony -h
+```
+
+### Profiling
+```bash
+cmake -DENABLE_PROFILING=ON ..
+make 
+./polyphony filename.mid # run polyphony program
+
+gprof ./polyphony gmon.out > profile.txt
+gprof ./polyphony | gprof2dot -o callgraph.dot
+dot -Tsvg callgraph.dot -o callgraph.svg
+```
+
+Install dependencies
+```bash
+pip install gprof2dot
+sudo apt-get install graphviz
 ```
 
 

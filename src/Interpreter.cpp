@@ -202,10 +202,12 @@ _<> Interpreter::visit(const StackOp& node) {
             if (_check(t))
                 return ErrorHandler::addContext(t, "@ Stack dup. operation: " + node.op.toString());
 
-            if (std::get<int64_t>(t) > static_cast<int64_t>(stack.size()) - 1)
-                return ErrorHandler::createError(ErrorCode::STACK_UNDERFLOW, "dup. stack underflow with value: " +  std::to_string(std::get<int64_t>(t)));
+            auto value = std::get<int64_t>(t);
 
-            if (auto result = push(stack.at(stack.size() - 1 - std::get<int64_t>(t))); _check(result))
+            if (value > static_cast<int64_t>(stack.size()) - 1)
+                return ErrorHandler::createError(ErrorCode::STACK_UNDERFLOW, "dup. stack underflow with value: " +  std::to_string(value));
+
+            if (auto result = push(stack.at(stack.size() - 1 - value)); _check(result))
                 return ErrorHandler::addContext(t, "@ Stack dup. operation: " + node.op.toString());
             break;
         }
@@ -392,10 +394,16 @@ _<> Interpreter::visit(const Definition& node) {
 
 _<> Interpreter::visit(const IdentifierCall& node) {
     auto funcResult = getFunc(node.identifier->token.value);
+    if (!_check(funcResult)) {
+        return std::monostate();
+    }
+
     auto varResult = getVar(node.identifier->token.value);
-    if (_check(funcResult) && _check(varResult))
-        return ErrorHandler::addContext(funcResult, "@ Identifier call: " + node.identifier->token.toString());
-    return std::monostate();
+    if (!_check(varResult)) {
+        return std::monostate();
+    }
+
+    return ErrorHandler::addContext(funcResult, "@ Identifier call: " + node.identifier->token.toString());
 }
 
 _<> Interpreter::visit(const NoOp&) {
@@ -416,11 +424,16 @@ _<> Interpreter::push(int64_t value) { stack.push_back(value); return std::monos
 
 _<int64_t> Interpreter::top() { return stack.back();}
 
-_<> Interpreter::enterScope() { scopes.push_back(Scope()); return std::monostate();}
+_<> Interpreter::enterScope() { scopes.push_back(std::vector<int64_t>()); return std::monostate();}
 
 _<> Interpreter::exitScope() { 
     if (scopes.empty()) {
         return ErrorHandler::createError(ErrorCode::STACK_UNDERFLOW, "@ Exiting scope");
+    }
+
+    for (auto id : scopes.back()) {
+        var_defs.erase(id);
+        func_defs.erase(id);
     }
 
     scopes.pop_back(); 
@@ -428,56 +441,57 @@ _<> Interpreter::exitScope() {
 }
 
 _<> Interpreter::getVar(int64_t varName) {
-    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        auto var_it = it->var_defs.find(varName);
-        if (var_it != it->var_defs.end()) {
-            push(var_it->second);
-            return std::monostate();
-        }
+
+    auto var_it = var_defs.find(varName);
+    if (var_it != var_defs.end()) {
+        push(var_it->second);
+        return std::monostate();
     }
-    return ErrorHandler::createError(ErrorCode::IDENTIFIER_NOT_FOUND,
-                                     "@ Getting variable: " + std::to_string(varName));
+    
+    std::ostringstream oss;
+    oss << "@ Getting variable: " << varName;
+    return ErrorHandler::createError(ErrorCode::IDENTIFIER_NOT_FOUND, oss.str());
 }
 
 _<> Interpreter::setVar(int64_t varName, int64_t value) {
     // check if variable is already defined
-    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        auto var_it = it->var_defs.find(varName);
-        if (var_it != it->var_defs.end()) {
-            return ErrorHandler::createError(ErrorCode::IDENTIFIER_ALREADY_DEFINED,
-                                             "@ Setting variable: " + std::to_string(varName));
-        }
+    auto var_it = var_defs.find(varName);
+    if (var_it != var_defs.end()) {
+        return ErrorHandler::createError(ErrorCode::IDENTIFIER_ALREADY_DEFINED,
+                                            "@ Setting variable: " + std::to_string(varName));
     }
 
-    scopes.back().var_defs[varName] = value;
+    var_defs[varName] = value;
+    scopes.back().push_back(varName);
     return std::monostate();
 }
 
 _<> Interpreter::getFunc(int64_t funcName) {
-    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        auto func_it = it->func_defs.find(funcName);
-        if (func_it != it->func_defs.end()) {
-            // execute function
-            if (auto result = func_it->second->accept(*this); _check(result)) {
-                return ErrorHandler::addContext(result, "@ Function: " + std::to_string(funcName));
-            }
-            
-            return std::monostate();
+
+    auto func_it = func_defs.find(funcName);
+    if (func_it != func_defs.end()) {
+        // execute function
+        if (auto result = func_it->second->accept(*this); _check(result)) {
+            return ErrorHandler::addContext(result, "@ Function: " + std::to_string(funcName));
         }
+        
+        return std::monostate();
     }
-    return ErrorHandler::createError(ErrorCode::IDENTIFIER_NOT_FOUND, "@ Getting function: " + std::to_string(funcName));
+
+    std::ostringstream oss;
+    oss << "@ Getting function: " << funcName;
+    return ErrorHandler::createError(ErrorCode::IDENTIFIER_NOT_FOUND, oss.str());
 }
 
 _<> Interpreter::setFunc(int64_t funcName, const Block_t func) {
     // check if function is already defined
-    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        auto func_it = it->func_defs.find(funcName);
-        if (func_it != it->func_defs.end()) {
-            return ErrorHandler::createError(ErrorCode::IDENTIFIER_ALREADY_DEFINED, "@ Setting function: " + std::to_string(funcName));
-        }
+    auto func_it = func_defs.find(funcName);
+    if (func_it != func_defs.end()) {
+        return ErrorHandler::createError(ErrorCode::IDENTIFIER_ALREADY_DEFINED, "@ Setting function: " + std::to_string(funcName));
     }
-
-    scopes.back().func_defs[funcName] = func;
+    
+    func_defs[funcName] = func;
+    scopes.back().push_back(funcName);
     return std::monostate();
 }
 

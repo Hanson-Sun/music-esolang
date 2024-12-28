@@ -7,11 +7,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 file(GLOB SOURCES "src/*.cpp")
 
-add_executable(polyphony  ${SOURCES})
+add_executable(polyphony ${SOURCES})
 
 target_include_directories(polyphony PUBLIC
     ${PROJECT_SOURCE_DIR}/include
 )
+
+# option to enable profiling
+option(ENABLE_PROFILING "Enable profiling with gprof" OFF)
+
+if (ENABLE_PROFILING)
+    if (MSVC)
+        target_compile_options(polyphony PRIVATE /Zi /Gh /GH)
+        target_link_options(polyphony PRIVATE /PROFILE)
+    else()
+        target_compile_options(polyphony PRIVATE -pg)
+        target_link_options(polyphony PRIVATE -pg)
+    endif()
+endif()
 
 # libraries 
 # target_link_libraries(polyphony PRIVATE ...)
@@ -19,5 +32,5 @@ target_include_directories(polyphony PUBLIC
 if (MSVC)
     target_compile_options(polyphony PRIVATE /W3 /WX)
 else()
-    target_compile_options(polyphony PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(polyphony PRIVATE -Wall -Wextra -Wpedantic -O3)
 endif()

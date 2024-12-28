@@ -1,5 +1,6 @@
 #pragma once
 #include <variant>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -42,27 +43,69 @@ const std::unordered_map<ErrorCode, std::string> ErrorMessages = {
 struct Error {
     ErrorCode code;
     std::string message;
-    Error(ErrorCode code, const std::string& message) : code(code), message(message) {}
-    Error(ErrorCode code) : code(code), message("") {}
-    Error() : code(ErrorCode::NONE), message("") {}
+
+    Error(ErrorCode code, std::string message) : code(code), message(std::move(message)) {}
+    Error(ErrorCode code) : code(code), message() {}
+    Error() : code(ErrorCode::NONE), message() {}
 };
 
+
+template<typename T>
+class Result {
+public:
+    Result(T value) : is_error(false), value(value) {}
+    Result(Error error) : is_error(true), error(std::move(error)) {}
+
+    bool has_value() const { return !is_error; }
+    bool has_error() const { return is_error; }
+
+    T& get_value() { return value; }
+    const T& get_value() const { return value; }
+
+    Error& get_error() { return error; }
+    const Error& get_error() const { return error; }
+
+private:
+    bool is_error;
+    union {
+        T value;
+        Error error;
+    };
+};
+
+template<>
+class Result<void> {
+public:
+    Result() : is_error(false) {}
+    Result(Error error) : is_error(true), error(std::move(error)) {}
+
+    bool has_value() const { return !is_error; }
+    bool has_error() const { return is_error; }
+
+    void get_value() const {}
+    Error& get_error() { return error; }
+    const Error& get_error() const { return error; }
+
+private:
+    bool is_error;
+    Error error;
+};
 
 template<typename T = std::monostate>
 using _ = std::variant<T, Error>;
 
 template<typename T>
-bool _check(const _<T>& result) {
+inline bool _check(const _<T>& result) {
     return std::holds_alternative<Error>(result);
 }
 
 class ErrorHandler {
 public:
-    static void printError(const Error& error) {
+    inline static void printError(const Error& error) {
         std::cerr << ERR_RED << "Error: " << ErrorMessages.at(error.code) << ". " << ERR_MAGENTA << error.message << ERR_RESET << std::endl;
     }
 
-    static Error createError(ErrorCode code, const std::string& context = "", const std::string& message = "") {
+    inline static Error createError(ErrorCode code, const std::string& context = "", const std::string& message = "") {
         std::string m = message;
         if (!context.empty()) {
             m += "\n  ~~~>[" + context + "]";
@@ -71,7 +114,7 @@ public:
     }
 
     template<typename T>
-    static Error addContext(std::variant<T, Error> error, const std::string& context) {
+    inline static Error addContext(std::variant<T, Error> error, const std::string& context) {
         std::get<Error>(error).message += "\n  ~~~>[" + context + "]";
         return std::get<Error>(error);
     }
