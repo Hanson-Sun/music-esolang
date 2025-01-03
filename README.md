@@ -221,6 +221,8 @@ cmake ..
 make
 ```
 
+### TODO: there are more complicated instructions for building with LLVM, make sure it actually works on mac!
+
 ### Usage
 Run file
 ```bash
