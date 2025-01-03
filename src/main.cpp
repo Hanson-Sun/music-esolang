@@ -3,6 +3,7 @@
 #include "Interpreter.h"
 #include "MidiReader.h"
 #include "Errors.h"
+#include "Codegen.h"
 
 #include <iostream>
 #include <fstream>
