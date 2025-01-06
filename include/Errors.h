@@ -25,7 +25,8 @@ enum ErrorCode : int8_t{
     IDENTIFIER_ALREADY_DEFINED,
     MEMORY_ALLOCATION_FAILED,
     INVALID_STATEMENT,
-    MISSING_END_TOKEN
+    MISSING_END_TOKEN,
+    INVALID_VALUE
 };
 
 const std::unordered_map<ErrorCode, std::string> ErrorMessages = {
@@ -37,7 +38,8 @@ const std::unordered_map<ErrorCode, std::string> ErrorMessages = {
     {ErrorCode::IDENTIFIER_ALREADY_DEFINED, "Identifier already defined"},
     {ErrorCode::MEMORY_ALLOCATION_FAILED, "Memory allocation failed"},
     {ErrorCode::INVALID_STATEMENT, "Invalid statement"},
-    {ErrorCode::MISSING_END_TOKEN, "Missing end token"}
+    {ErrorCode::MISSING_END_TOKEN, "Missing end token"},
+    {ErrorCode::INVALID_VALUE, "Invalid value"}
 };
 
 struct Error {

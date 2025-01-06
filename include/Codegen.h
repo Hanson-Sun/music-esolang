@@ -8,7 +8,6 @@
 
 class Codegen : public ASTVisitor {
  public:
-
     Codegen();
 
     _<> compile(const Program& program);
@@ -27,9 +26,44 @@ class Codegen : public ASTVisitor {
     _<> visit(const Definition& node) override;
     _<> visit(const IdentifierCall& node) override;
     _<> visit(const NoOp& node) override;
+
  private:
     llvm::LLVMContext context;
     llvm::IRBuilder<> builder;
     std::unique_ptr<llvm::Module> module;
-    std::unordered_map<int32_t, llvm::Value*> named_value_map;
+
+    // i think i need to handle this differently
+    std::unordered_map<int32_t, llvm::Value*> named_value_map; 
+
+    llvm::Function* printf_func;
+    llvm::Function* scanf_func;
+    llvm::Function* malloc_func;
+    llvm::Function* realloc_func;
+    llvm::Function* free_func;
+
+    llvm::Value*          stack;      // stack 
+    llvm::GlobalVariable* stack_ptr;  // index
+    llvm::GlobalVariable* stack_size; // integer size
+
+    llvm::Value*          arena; // i think i need extra stuff here :frown:
+    llvm::GlobalVariable* arena_size;
+
+    void createStack(std::size_t size = 1024);
+    void createArena();
+    void createMemFuncs();
+    void createPrintf();
+    void createScanf();
+
+    void         push(llvm::Value* value);
+    llvm::Value* pop();
+    llvm::Value* top();
+
+    _<> enterScope();
+    _<> exitScope();
+
+    //  _<> getVar(int64_t varName);
+    //  _<> setVar(int64_t varName, int64_t value);
+
+    //  _<> getFunc(int64_t funcName);
+    //  _<> setFunc(int64_t funcName, const Block_t def);
 };

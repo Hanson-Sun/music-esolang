@@ -25,69 +25,39 @@ _<> Interpreter::visit(const Literal& node) {
 }
 
 _<> Interpreter::visit(const ArithmeticOp& node) {
+
+    if (stack.size() < 2) {
+        return ErrorHandler::createError(ErrorCode::STACK_UNDERFLOW, "@ Arithmetic operation, " + node.op.toString() + ": not enough values on stack");
+    }
+
+    auto s1 = stack.back();
+    stack.pop_back();
+    auto s2 = stack.back();
+    stack.pop_back();
+
     switch (node.op.type) {
         case TokenType::ADD: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Arithmetic + operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Arithmetic + operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(a) + std::get<int64_t>(b)); _check(result))
+            if (auto result = push(s2 + s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic + operation: " + node.op.toString());
             break;
         }
         case TokenType::SUB: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Arithmetic - operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Arithmetic - operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(b) - std::get<int64_t>(a)); _check(result))
+            if (auto result = push(s2 - s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic - operation: " + node.op.toString());
             break;
         }
         case TokenType::MUL: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Arithmetic * operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Arithmetic * operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(a) * std::get<int64_t>(b)); _check(result))
+            if (auto result = push(s2 * s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic * operation: " + node.op.toString());
             break;
         }
         case TokenType::DIV: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Arithmetic / operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Arithmetic / operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(b) / std::get<int64_t>(a)); _check(result))
+            if (auto result = push(s2 / s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic / operation: " + node.op.toString());
             break;
         }
         case TokenType::MOD: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Arithmetic % operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Arithmetic % operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(b) % std::get<int64_t>(a)); _check(result))
+            if (auto result = push(s2 % s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Arithmetic % operation: " + node.op.toString());
             break;
         }
@@ -99,78 +69,49 @@ _<> Interpreter::visit(const ArithmeticOp& node) {
 }
 
 _<> Interpreter::visit(const LogicalOp& node) {
+    int64_t s1 = 0;
+    int64_t s2 = 0;
+
+    if (node.op.type == TokenType::NOT && stack.size() >= 1) {
+        s1 = stack.back();
+        stack.pop_back();
+    } else if (stack.size() >= 2) {
+        s1 = stack.back();
+        stack.pop_back();
+        s2 = stack.back();
+        stack.pop_back();
+    } else {
+        return ErrorHandler::createError(ErrorCode::STACK_UNDERFLOW, "@ Logical operation, " + node.op.toString() + ": not enough values on stack");
+    }
+
     switch (node.op.type) {
         case TokenType::EQ: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Logical == operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Logical == operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(a) == std::get<int64_t>(b)); _check(result))
+            if (auto result = push(s2 == s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Logical == operation: " + node.op.toString());
             break;
         }
         case TokenType::LESS: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Logical < operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Logical < operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(b) < std::get<int64_t>(a)); _check(result))
+            if (auto result = push(s2 < s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Logical < operation: " + node.op.toString());
             break;
         }
         case TokenType::GREATER: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Logical > operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Logical > operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(b) > std::get<int64_t>(a)); _check(result))
+            if (auto result = push(s2 > s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Logical > operation: " + node.op.toString());
             break;
         }
         case TokenType::AND: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Bitwise & operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Bitwise & operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(a) & std::get<int64_t>(b)); _check(result))
+            if (auto result = push(s2 & s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Bitwise & operation: " + node.op.toString());
             break;
         }
         case TokenType::OR: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Bitwise | operation: " + node.op.toString());
-
-            auto b = pop();
-            if (_check(b))
-                return ErrorHandler::addContext(b, "@ Bitwise | operation: " + node.op.toString());
-
-            if (auto result = push(std::get<int64_t>(a) | std::get<int64_t>(b)); _check(result))
+            if (auto result = push(s2 | s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Bitwise | operation: " + node.op.toString());
             break;
         }
         case TokenType::NOT: {
-            auto a = pop();
-            if (_check(a))
-                return ErrorHandler::addContext(a, "@ Bitwise ~ operation: " + node.op.toString());
-
-            if (auto result = push(~std::get<int64_t>(a)); _check(result))
+            if (auto result = push(~s1); _check(result))
                 return ErrorHandler::addContext(result, "@ Bitwise ~ operation: " + node.op.toString());
             break;
         }
@@ -178,6 +119,7 @@ _<> Interpreter::visit(const LogicalOp& node) {
             return ErrorHandler::createError(ErrorCode::INVALID_TOKEN, "@ Logical operation: " + node.op.toString());
             break;
     };
+
     return std::monostate();
 }
 
@@ -285,6 +227,7 @@ _<> Interpreter::visit(const IfElse& node) {
     auto value = pop();
     if (_check(value))
         return ErrorHandler::addContext(value, "@ IfElse operation: if condition");
+
     if (std::get<int64_t>(value) != 0) {
         if (auto result = node.then_branch->accept(*this); _check(result))
             return ErrorHandler::addContext(result, "@ IfElse operation: if body");
